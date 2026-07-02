@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --map-height: 100dvh;
+  }
+
+  :root:not(.dark) {
+    --dark-bg: 248 250 252;
+    --dark-card: 255 255 255;
+    --dark-border: 226 232 240;
+    --dark-surface: 241 245 249;
+    --dark-text: 15 23 42;
+  }
+
+  :root.dark {
+    --dark-bg: 10 14 26;
+    --dark-card: 17 24 39;
+    --dark-border: 31 41 55;
+    --dark-surface: 22 29 46;
+    --dark-text: 255 255 255;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    color: rgb(var(--dark-text));
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #111827;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+
+  .glass-dark {
+    background-color: rgb(var(--dark-card) / 0.9);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgb(var(--dark-border));
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-500 text-white font-medium px-4 py-2 rounded-xl
+           transition-all duration-200 active:scale-95 shadow-glow-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-white/10 hover:bg-white/20 text-white font-medium px-4 py-2 rounded-xl
+           transition-all duration-200 active:scale-95 border border-white/10;
+  }
+
+  .btn-accent {
+    @apply bg-accent-500 hover:bg-accent-400 text-white font-medium px-4 py-2 rounded-xl
+           transition-all duration-200 active:scale-95 shadow-glow-accent;
+  }
+
+  .input-field {
+    @apply bg-dark-surface border border-dark-border text-white placeholder-gray-500
+           rounded-xl px-4 py-3 w-full focus:outline-none focus:border-primary-500
+           focus:ring-1 focus:ring-primary-500/50 transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-dark-card border border-dark-border rounded-2xl shadow-card;
+  }
+
+  .map-panel {
+    background-color: rgb(var(--dark-card) / 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgb(var(--dark-border));
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  /* Map container */
+  #map {
+    width: 100%;
+    height: var(--map-height);
+  }
+
+  /* MapLibre GL custom styles */
+  .maplibregl-map,
+  .mapboxgl-map {
+    background: rgb(var(--dark-bg)) !important;
+    font-family: var(--font-inter) !important;
+  }
+
+  .maplibregl-ctrl-attrib,
+  .mapboxgl-ctrl-attrib {
+    background: rgba(17, 24, 39, 0.8) !important;
+    color: #9ca3af !important;
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+    border-radius: 8px 0 0 0 !important;
+    backdrop-filter: blur(4px);
+  }
+
+  .maplibregl-ctrl-attrib a,
+  .mapboxgl-ctrl-attrib a {
+    color: #60a5fa !important;
+  }
+
+  .maplibregl-popup-content,
+  .mapboxgl-popup-content {
+    background: #111827 !important;
+    color: white !important;
+    border: 1px solid #1f2937 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+    padding: 12px 14px !important;
+  }
+
+  .maplibregl-popup-tip,
+  .mapboxgl-popup-tip {
+    border-top-color: #1f2937 !important;
+  }
+
+  .maplibregl-popup-close-button,
+  .mapboxgl-popup-close-button {
+    color: #9ca3af !important;
+    font-size: 18px !important;
+    padding: 2px 8px !important;
+  }
+
+  .maplibregl-popup-close-button:hover,
+  .mapboxgl-popup-close-button:hover {
+    color: white !important;
+    background: transparent !important;
+  }
+
+  .maplibregl-ctrl-group,
+  .mapboxgl-ctrl-group {
+    background: rgb(17 24 39 / 0.9) !important;
+    border: 1px solid #1f2937 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+  }
+
+  .maplibregl-ctrl-group button,
+  .mapboxgl-ctrl-group button {
+    background: transparent !important;
+    border-color: #1f2937 !important;
+  }
+
+  .maplibregl-ctrl-group button:hover,
+  .mapboxgl-ctrl-group button:hover {
+    background: rgba(255,255,255,0.1) !important;
+  }
+
+  .maplibregl-ctrl-group button span,
+  .mapboxgl-ctrl-group button span {
+    filter: invert(1);
+  }
+
+  /* Navigation pulse animation */
+  .location-pulse {
+    position: relative;
+  }
+  .location-pulse::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(14, 165, 233, 0.3);
+    animation: radar 2s ease-out infinite;
+  }
+
+  /* Route type badges */
+  .route-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  .h-dvh {
+    height: 100dvh;
+  }
+
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 640px) {
+  .responsive-px {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .responsive-py {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .responsive-gap {
+    gap: 0.75rem;
+  }
+}
+
+/* Prevent pull-to-refresh and overscroll on mobile */
+html {
+  overscroll-behavior: none;
+}
+
+/* Better tap highlights on mobile */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
