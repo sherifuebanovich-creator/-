@@ -163,7 +163,7 @@ export const reportsApi = {
   vote: (id: string, confirm: boolean) => api.post(`/reports/${id}/vote`, { confirm }),
   delete: (id: string) => api.delete(`/reports/${id}`),
   getMy: (page = 1) => api.get(`/reports/my?page=${page}`),
-  validatePhoto: (imageUrl: string, reportType?: string) => api.post('/reports/validate-photo', { imageUrl, reportType }),
+  validatePhoto: (imageUrl: string, reportType?: string, description?: string) => api.post('/reports/validate-photo', { imageUrl, reportType, description }),
   getLimit: () => api.get('/reports/limit'),
   getForCity: (city: string, page = 1) => api.get(`/reports/city/${encodeURIComponent(city)}?page=${page}`),
 };
@@ -206,9 +206,9 @@ export const socialApi = {
 
 // Premium endpoints
 export const premiumApi = {
-  getTiers: () => api.get('/premium/tiers'),
+  getTiers: (lang = 'en') => api.get('/premium/tiers', { params: { lang } }),
   getMy: () => api.get('/premium/my'),
-  subscribe: (tierName: string, months = 1) => api.post('/premium/subscribe', { tierName, months }),
+  createCheckout: (tierName: string, months = 1) => api.post('/premium/create-checkout', { tierName, months }),
   cancel: () => api.post('/premium/cancel'),
   canCreateGroup: () => api.get('/premium/can-create-group'),
 };

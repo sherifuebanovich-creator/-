@@ -1,12 +1,13 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
-import { SessionProvider } from 'next-auth/react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useAuthStore } from '@/store/auth.store';
-import { SessionSync } from '@/components/auth/SessionSync';
 import { I18nInitializer } from '@/i18n/I18nProvider';
+import dynamic from 'next/dynamic';
+
+const SessionSyncLazy = dynamic(() => import('@/components/auth/SessionSync').then(m => ({ default: m.SessionSync })), { ssr: false });
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,13 +30,28 @@ function SocketInitializer() {
   return null;
 }
 
+const SessionProviderLazy = lazy(() => import('next-auth/react').then(m => ({ default: m.SessionProvider })));
+
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <>{children}</>;
+  return (
+    <Suspense fallback={<>{children}</>}>
+      <SessionProviderLazy>
+        {children}
+      </SessionProviderLazy>
+    </Suspense>
+  );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(() => queryClient);
 
   return (
-    <SessionProvider>
-      <SessionSync />
+    <AuthProvider>
       <QueryClientProvider client={client}>
+        <SessionSyncLazy />
         <I18nInitializer />
         <SocketInitializer />
         {children}
@@ -48,6 +64,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }}
         />
       </QueryClientProvider>
-    </SessionProvider>
+    </AuthProvider>
   );
 }

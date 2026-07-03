@@ -4,7 +4,7 @@
   "outputDirectory": ".next",
   "installCommand": "npm install --legacy-peer-deps",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://rovx-backend-xxxxx-uc.a.run.app/api/v1",
-    "NEXT_PUBLIC_WS_URL": "https://rovx-backend-xxxxx-uc.a.run.app"
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
+    "NEXT_PUBLIC_WS_URL": "@next_public_ws_url"
   }
 }

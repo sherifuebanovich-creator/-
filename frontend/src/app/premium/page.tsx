@@ -1,12 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { premiumApi } from '@/lib/api';
 import { PremiumTier, PremiumSubscription, User } from '@/types';
 import { motion } from 'framer-motion';
 import { FaCrown, FaCheck, FaArrowLeft, FaTimes } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const TIER_COLORS = ['text-gray-400', 'text-blue-400', 'text-purple-400', 'text-yellow-400'];
 const TIER_BG = [
@@ -23,17 +24,27 @@ const TIER_BORDER = [
 ];
 
 function PremiumIcon({ tier, size = 24 }: { tier: number; size?: number }) {
-  const colors: Record<number, string> = { 
-    0: 'text-gray-500', 
-    1: 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]', 
-    2: 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]', 
-    3: 'text-yellow-400 drop-shadow-[0_0_12px_rgba(234,179,8,0.7)]' 
+  const colors: Record<number, string> = {
+    0: 'text-gray-500',
+    1: 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+    2: 'text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]',
+    3: 'text-yellow-400 drop-shadow-[0_0_12px_rgba(234,179,8,0.7)]'
   };
   return <FaCrown size={size} className={colors[tier] || 'text-primary-400'} />;
 }
 
-export default function PremiumPage() {
+export default function PremiumPageWrapper() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-dvh bg-dark-bg"><div className="w-8 h-8 border-3 border-primary-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <PremiumPage />
+    </Suspense>
+  );
+}
+
+function PremiumPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
   const setUser = useAuthStore(s => s.setUser);
   const [tiers, setTiers] = useState<PremiumTier[]>([]);
@@ -42,33 +53,51 @@ export default function PremiumPage() {
   const [subscribeLoading, setSubscribeLoading] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([
-      premiumApi.getTiers(),
-      premiumApi.getMy(),
-    ]).then(([tiersRes, subRes]) => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+    if (success === 'true') {
+      toast.success(t('premium.paymentSuccess'));
+      fetchData();
+    } else if (canceled === 'true') {
+      toast(t('premium.paymentCanceled'), { icon: '💳' });
+    } else {
+      fetchData();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!loading) fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
+
+  const fetchData = async () => {
+    try {
+      const [tiersRes, subRes] = await Promise.all([
+        premiumApi.getTiers(i18n.language),
+        premiumApi.getMy(),
+      ]);
       setTiers(tiersRes.data?.data || tiersRes.data);
       setMySub(subRes.data?.data || subRes.data);
-    }).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubscribe = async (tierName: string) => {
     setSubscribeLoading(tierName);
     try {
-      const res = await premiumApi.subscribe(tierName, 1);
-      const data = res.data?.data || res.data;
-      setMySub(prev => ({ ...prev, ...data, active: true }));
-
-      // Update global user state
-      if (user) {
-        setUser({
-          ...user,
-          subscription: tierName as User['subscription'],
-        });
+      const res = await premiumApi.createCheckout(tierName, 1);
+      const { url } = res.data?.data || res.data;
+      if (url) {
+        window.location.href = url;
+      } else {
+        toast.error(t('premium.checkoutError'));
       }
-
-      toast.success(`Подписка на ${data.label} оформлена!`);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Ошибка оформления подписки');
+      toast.error(err?.response?.data?.message || t('premium.subscribeError'));
     } finally {
       setSubscribeLoading(null);
     }
@@ -78,35 +107,28 @@ export default function PremiumPage() {
     try {
       await premiumApi.cancel();
       setMySub(prev => prev ? { ...prev, active: false } : null);
-
-      // Update global user state
       if (user) {
-        setUser({
-          ...user,
-          subscription: 'FREE',
-        });
+        setUser({ ...user, subscription: 'FREE' });
       }
-
-      toast.success('Подписка отменена');
+      toast.success(t('premium.cancelled'));
     } catch {
-      toast.error('Ошибка отмены');
+      toast.error(t('premium.cancelError'));
     }
   };
 
   return (
     <div className="min-h-dvh bg-dark-bg pb-safe-bottom relative overflow-hidden">
-      {/* Premium Background Lights */}
       <div className="absolute top-[-10%] left-[-20%] w-[80vw] h-[80vw] rounded-full bg-blue-900/10 blur-[120px] pointer-events-none" />
       <div className="absolute top-[20%] right-[-20%] w-[60vw] h-[60vw] rounded-full bg-purple-900/10 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[10%] w-[50vw] h-[50vw] rounded-full bg-yellow-900/5 blur-[80px] pointer-events-none" />
 
       <div className="relative px-4 pt-14 max-w-lg mx-auto z-10">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-all">
-          <FaArrowLeft size={14} /> Назад
+          <FaArrowLeft size={14} /> {t('common.back')}
         </button>
 
         <div className="text-center mb-8">
-          <motion.div 
+          <motion.div
             animate={{ y: [0, -6, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
             className="inline-block"
@@ -114,16 +136,16 @@ export default function PremiumPage() {
             <PremiumIcon tier={mySub?.tier || 0} size={56} />
           </motion.div>
           <h1 className="text-3xl font-black text-white font-display mt-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
-            Премиум возможности
+            {t('premium.title')}
           </h1>
           <p className="text-gray-400 text-sm mt-1 max-w-xs mx-auto">
-            Получите приоритетный статус, AI-ассистента и продвинутую навигацию
+            {t('premium.subtitle')}
           </p>
           {mySub?.active && (
             <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/30">
               <FaCheck className="text-green-400 animate-pulse" size={12} />
               <span className="text-green-400 text-xs font-semibold uppercase tracking-wider">
-                {mySub.label} активна {mySub.endDate ? `до ${new Date(mySub.endDate).toLocaleDateString()}` : ''}
+                {mySub.label} {t('premium.activeUntil')} {mySub.endDate ? new Date(mySub.endDate).toLocaleDateString(i18n.language) : ''}
               </span>
             </div>
           )}
@@ -135,11 +157,11 @@ export default function PremiumPage() {
           </div>
         ) : (
           <div className="space-y-5">
-            {tiers.filter(t => t.tier > 0).map((tier, idx) => {
+            {tiers.filter((tier: PremiumTier) => tier.tier > 0).map((tier: PremiumTier, idx: number) => {
               const isActive = mySub?.name === tier.name && mySub?.active;
               const isCurrent = mySub?.name === tier.name;
-              const isPopular = tier.tier === 2; // Standard tier is popular
-              const isBest = tier.tier === 3;     // Max is best value
+              const isPopular = tier.tier === 2;
+              const isBest = tier.tier === 3;
 
               return (
                 <motion.div key={tier.name}
@@ -151,20 +173,18 @@ export default function PremiumPage() {
                     isActive ? TIER_BORDER[tier.tier] : 'border-white/5 hover:border-white/20'
                   } ${TIER_BG[tier.tier]}`}
                 >
-                  {/* Decorative Glowing Mesh inside Card */}
                   <div className={`absolute -right-16 -top-16 w-32 h-32 rounded-full opacity-20 blur-2xl ${
                     tier.tier === 1 ? 'bg-blue-500' : tier.tier === 2 ? 'bg-purple-500' : 'bg-yellow-500'
                   }`} />
 
-                  {/* Hot Badge */}
                   {isPopular && (
                     <div className="absolute top-3 right-3 bg-purple-600 text-white text-[9px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.4)]">
-                      Популярно
+                      {t('premium.popular')}
                     </div>
                   )}
                   {isBest && (
                     <div className="absolute top-3 right-3 bg-yellow-600 text-black text-[9px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider shadow-[0_0_10px_rgba(234,179,8,0.4)]">
-                      Максимум
+                      {t('premium.bestValue')}
                     </div>
                   )}
 
@@ -175,16 +195,16 @@ export default function PremiumPage() {
                         <h3 className={`text-xl font-black font-display tracking-wide ${TIER_COLORS[tier.tier]}`}>{tier.label}</h3>
                       </div>
                       <p className="text-3xl font-black text-white mt-2">
-                        ${tier.price}<span className="text-xs text-gray-400 font-normal tracking-normal"> / месяц</span>
+                        ${tier.price}<span className="text-xs text-gray-400 font-normal tracking-normal"> / {t('premium.perMonth')}</span>
                       </p>
                       {tier.tier === 2 && (
-                        <p className="text-[10px] text-purple-300 mt-0.5">🔥 Самая популярная · экономия 42% против Max</p>
+                        <p className="text-[10px] text-purple-300 mt-0.5">🔥 {t('premium.mostPopular')}</p>
                       )}
                       {tier.tier === 3 && (
-                        <p className="text-[10px] text-yellow-300 mt-0.5">👑 Всё включено · безлимитный AI</p>
+                        <p className="text-[10px] text-yellow-300 mt-0.5">👑 {t('premium.allIncluded')}</p>
                       )}
                       {tier.tier === 1 && (
-                        <p className="text-[10px] text-blue-300 mt-0.5">💡 Лучшее для начала</p>
+                        <p className="text-[10px] text-blue-300 mt-0.5">💡 {t('premium.greatStart')}</p>
                       )}
                     </div>
                   </div>
@@ -192,86 +212,26 @@ export default function PremiumPage() {
                   <div className="space-y-2.5 text-xs">
                     {tier.tier >= 1 && (
                       <>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">Все типы маршрутов: быстрый, короткий, безопасный</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">Голосовая навигация с TTS-озвучкой</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">Мгновенная отправка репортов на карту</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">Без рекламы</span>
-                        </div>
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.allRouteTypes')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.voiceNav')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.instantReports')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.noAds')} />
                       </>
                     )}
                     {tier.tier >= 2 && (
                       <>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300 font-medium">🧠 AI-ассистент Co-Driver в реальном времени</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">🚦 Светофоры, радары и камеры онлайн</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">🌤 Погода и пробки по маршруту</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">До 3 групп и City-чаты</span>
-                        </div>
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.aiAssistant')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.camerasOnline')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.weatherTraffic')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.groups')} />
                       </>
                     )}
                     {tier.tier >= 3 && (
                       <>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300 font-semibold text-yellow-400">🎯 Безлимитные AI голосовые команды</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">📡 3D-карты со зданиями (эксклюзив)</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">Создание групп и конвоев до 10 шт</span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                            <FaCheck className="text-green-400" size={8} />
-                          </div>
-                          <span className="text-gray-300">💎 Приоритетная поддержка 24/7</span>
-                        </div>
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.unlimitedAI')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features._3dMaps')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.convoys')} />
+                        <Feature icon={<FaCheck size={8} />} text={t('premium.features.support247')} />
                       </>
                     )}
                   </div>
@@ -292,11 +252,11 @@ export default function PremiumPage() {
                     {subscribeLoading === tier.name ? (
                       <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : isActive ? (
-                      <><FaTimes size={12} /> Отменить подписку</>
+                      <><FaTimes size={12} /> {t('premium.cancelSubscription')}</>
                     ) : isCurrent ? (
-                      'Текущая подписка'
+                      t('premium.currentPlan')
                     ) : (
-                      <><FaCrown size={12} /> Подключить</>
+                      <><FaCrown size={12} /> {t('premium.subscribe')}</>
                     )}
                   </button>
                 </motion.div>
@@ -315,6 +275,17 @@ export default function PremiumPage() {
           animation: pulse-slow 3s infinite ease-in-out;
         }
       `}</style>
+    </div>
+  );
+}
+
+function Feature({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+        {icon}
+      </div>
+      <span className="text-gray-300">{text}</span>
     </div>
   );
 }

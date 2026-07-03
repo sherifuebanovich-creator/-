@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { friendsApi } from '@/lib/api';
 import { Friend, FriendRequest } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 import { FaArrowLeft, FaUserPlus, FaUser, FaUserCheck, FaUserTimes, FaSearch, FaCircle, FaTimes } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 export default function FriendsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -49,42 +51,42 @@ export default function FriendsPage() {
   const sendRequest = async (userId: string) => {
     try {
       await friendsApi.sendRequest(userId);
-      toast.success('Запрос отправлен');
+      toast.success(t('friends.requestSent'));
       setSearchResults(prev => prev.map(u => u.id === userId ? { ...u, isFriend: true, requestSent: true } : u));
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Ошибка');
+      toast.error(err?.response?.data?.message || t('friends.error'));
     }
   };
 
   const acceptRequest = async (userId: string) => {
     try {
       await friendsApi.acceptRequest(userId);
-      toast.success('Запрос принят');
+      toast.success(t('friends.requestAccepted'));
       setRequests(prev => prev.filter(r => r.user.id !== userId));
-    } catch { toast.error('Ошибка'); }
+    } catch { toast.error(t('friends.error')); }
   };
 
   const rejectRequest = async (userId: string) => {
     try {
       await friendsApi.rejectRequest(userId);
       setRequests(prev => prev.filter(r => r.user.id !== userId));
-    } catch { toast.error('Ошибка'); }
+    } catch { toast.error(t('friends.error')); }
   };
 
   const removeFriend = async (userId: string) => {
     try {
       await friendsApi.removeFriend(userId);
       setFriends(prev => prev.filter(f => f.id !== userId));
-      toast.success('Друг удалён');
-    } catch { toast.error('Ошибка'); }
+      toast.success(t('friends.friendRemoved'));
+    } catch { toast.error(t('friends.error')); }
   };
 
   if (!user) {
     return (
       <div className="min-h-dvh bg-dark-bg flex flex-col items-center justify-center gap-4 px-6">
         <FaUser size={48} className="text-gray-600" />
-        <h2 className="text-white font-bold text-xl">Войдите в аккаунт</h2>
-        <button onClick={() => router.push('/auth/login')} className="btn-primary px-6 py-3">Войти</button>
+        <h2 className="text-white font-bold text-xl">{t('friends.loginRequired')}</h2>
+        <button onClick={() => router.push('/auth/login')} className="btn-primary px-6 py-3">{t('friends.signIn')}</button>
       </div>
     );
   }
@@ -96,11 +98,11 @@ export default function FriendsPage() {
       </div>
       <div className="relative px-4 pt-14 max-w-lg mx-auto">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-all">
-          <FaArrowLeft size={14} /> Назад
+          <FaArrowLeft size={14} /> {t('friends.back')}
         </button>
 
         <div className="flex items-center gap-4 mb-6">
-          <h1 className="text-2xl font-black text-white font-display flex-1">Друзья</h1>
+          <h1 className="text-2xl font-black text-white font-display flex-1">{t('friends.title')}</h1>
           <button onClick={() => setTab('search')}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${tab === 'search' ? 'bg-primary-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>
             <FaSearch size={14} />
@@ -108,13 +110,13 @@ export default function FriendsPage() {
         </div>
 
         <div className="flex gap-2 mb-6">
-          {(['friends', 'requests'] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)}
+          {(['friends', 'requests'] as const).map((tabItem) => (
+            <button key={tabItem} onClick={() => setTab(tabItem)}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                tab === t ? 'bg-primary-600/30 text-primary-400 border border-primary-500/50' : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'
+                tab === tabItem ? 'bg-primary-600/30 text-primary-400 border border-primary-500/50' : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'
               }`}
             >
-              {t === 'friends' ? `Друзья (${friends.length})` : `Запросы (${requests.length})`}
+              {tabItem === 'friends' ? `${t('friends.friendsTab')} (${friends.length})` : `${t('friends.requestsTab')} (${requests.length})`}
             </button>
           ))}
         </div>
@@ -124,7 +126,7 @@ export default function FriendsPage() {
             <div className="relative">
               <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
               <input value={searchQuery} onChange={e => handleSearch(e.target.value)}
-                className="input-field pl-10 text-sm" placeholder="Поиск пользователей..." autoFocus />
+                className="input-field pl-10 text-sm" placeholder={t('friends.searchPlaceholder')} autoFocus />
             </div>
             <div className="mt-3 space-y-2">
               {searchLoading ? (
@@ -141,9 +143,9 @@ export default function FriendsPage() {
                     <p className="text-xs text-gray-500">@{u.username}{u.city ? ` · ${u.city}` : ''}</p>
                   </div>
                   {u.isFriend ? (
-                    <span className="text-xs text-green-400 flex items-center gap-1"><FaUserCheck size={10} /> Друг</span>
+                    <span className="text-xs text-green-400 flex items-center gap-1"><FaUserCheck size={10} /> {t('friends.friend')}</span>
                   ) : u.requestSent ? (
-                    <span className="text-xs text-yellow-400">Запрос отправлен</span>
+                    <span className="text-xs text-yellow-400">{t('friends.pending')}</span>
                   ) : (
                     <button onClick={() => sendRequest(u.id)}
                       className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary-600/20 text-primary-400 hover:bg-primary-600/30">
@@ -153,7 +155,7 @@ export default function FriendsPage() {
                 </div>
               ))}
               {searchQuery && !searchLoading && searchResults.length === 0 && (
-                <p className="text-center text-gray-500 text-sm py-6">Пользователи не найдены</p>
+                <p className="text-center text-gray-500 text-sm py-6">{t('friends.noUsers')}</p>
               )}
             </div>
           </div>
@@ -164,7 +166,7 @@ export default function FriendsPage() {
             {requests.length === 0 ? (
               <div className="card p-6 text-center">
                 <FaUserPlus size={24} className="text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Нет входящих запросов</p>
+                <p className="text-sm text-gray-400">{t('friends.noRequests')}</p>
               </div>
             ) : requests.map(r => (
               <div key={r.id} className="card p-3 flex items-center gap-3">
@@ -197,9 +199,9 @@ export default function FriendsPage() {
             ) : friends.length === 0 ? (
               <div className="card p-6 text-center">
                 <FaUser size={24} className="text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Нет друзей</p>
+                <p className="text-sm text-gray-400">{t('friends.noFriends')}</p>
                 <button onClick={() => setTab('search')} className="mt-3 text-sm text-primary-400 hover:text-primary-300">
-                  Найти друзей
+                  {t('friends.findFriends')}
                 </button>
               </div>
             ) : friends.map(f => (
@@ -212,7 +214,7 @@ export default function FriendsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-medium truncate">{f.displayName}</p>
-                  <p className="text-xs text-gray-500">{f.isOnline ? 'В сети' : 'Не в сети'}{f.city ? ` · ${f.city}` : ''}</p>
+                  <p className="text-xs text-gray-500">{f.isOnline ? t('friends.online') : t('friends.offline')}{f.city ? ` · ${f.city}` : ''}</p>
                 </div>
                 <button onClick={() => removeFriend(f.id)}
                   className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20">

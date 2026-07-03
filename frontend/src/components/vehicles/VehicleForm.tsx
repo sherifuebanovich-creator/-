@@ -144,7 +144,9 @@ export function VehicleForm({ onSubmit, onCancel }: VehicleFormProps) {
   const [selectedMake, setSelectedMake] = useState('');
   const [modelSearch, setModelSearch] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear());
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const years = useMemo(() => Array.from({ length: 32 }, (_, i) => currentYear - i), [currentYear]);
+  const [year, setYear] = useState(currentYear);
   const [showMakeDropdown, setShowMakeDropdown] = useState(false);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const makeRef = useRef<HTMLDivElement>(null);
@@ -251,7 +253,7 @@ export function VehicleForm({ onSubmit, onCancel }: VehicleFormProps) {
           <label className="block text-xs text-gray-400 mb-1 font-medium">{t('vehicleForm.year')}</label>
           <select value={year} onChange={(e) => setYear(Number(e.target.value))}
             className="input-field text-sm">
-            {Array.from({ length: 32 }, (_, i) => new Date().getFullYear() - i).map((y) => (
+            {years.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>

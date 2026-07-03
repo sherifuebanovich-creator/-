@@ -268,7 +268,7 @@ export default function MapViewGL() {
     (bounds: maplibregl.LngLatBounds) => {
       if (!mapRef.current) return;
       const z = mapRef.current.getZoom();
-      if (z < 14) return;
+      if (z < 13) return;
 
       const cats = useMapStore.getState().activeCategories;
       if (cats.length === 0) {
@@ -305,7 +305,7 @@ export default function MapViewGL() {
     (bounds: maplibregl.LngLatBounds) => {
       if (!mapRef.current) return;
       const z = mapRef.current.getZoom();
-      if (z < 14) return;
+      if (z < 13) return;
 
       const cats = useMapStore.getState().activeCategories;
       if (cats.length === 0) {
@@ -381,7 +381,7 @@ export default function MapViewGL() {
     (bounds: maplibregl.LngLatBounds) => {
       if (!mapRef.current) return;
       const z = mapRef.current.getZoom();
-      if (z < 14) {
+      if (z < 13) {
         cleanupMarkers(trafficMarkersRef.current);
         return;
       }

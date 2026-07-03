@@ -48,11 +48,12 @@ const authOptions: NextAuthOptions = {
               return false;
             }
           } else {
-            console.error('[Auth] Backend rejected Google sign-in:', res.status);
+            const errBody = await res.text().catch(() => '');
+            console.error(`[Auth] Backend rejected Google sign-in [${res.status}]: ${errBody.slice(0, 200)}`);
             return false;
           }
         } catch (err) {
-          console.error('[Auth] Google sign-in API error:', err);
+          console.error('[Auth] Backend unreachable (API server at ' + process.env.NEXT_PUBLIC_API_URL + '):', (err as Error).message);
           return false;
         }
       }

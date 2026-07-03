@@ -1,5 +1,5 @@
 steps:
-  # Backend: build & push to Container Registry
+  # Backend: build & push to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -16,7 +16,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/rovx-backend:$COMMIT_SHA'
     id: 'push-backend'
 
-  # Backend: migrate database
+  # Backend: run database migrations
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'run'
@@ -27,36 +27,49 @@ steps:
       - 'gcr.io/$PROJECT_ID/rovx-backend:$COMMIT_SHA'
       - 'sh'
       - '-c'
-      - 'npx prisma migrate deploy && npx ts-node prisma/seed.ts || true'
+      - 'npx prisma migrate deploy 2>/dev/null && npx ts-node prisma/seed.ts 2>/dev/null || true'
     id: 'migrate'
     secretEnv: ['DATABASE_URL']
 
   # Backend: deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
-      - 'gcloud'
       - 'run'
       - 'deploy'
       - 'rovx-backend'
       - '--image=gcr.io/$PROJECT_ID/rovx-backend:$COMMIT_SHA'
       - '--platform=managed'
-      - '--region=us-central1'
+      - '--region=${_REGION}'
       - '--allow-unauthenticated'
       - '--memory=512Mi'
       - '--cpu=1'
+      - '--cpu-boost'
       - '--min-instances=0'
-      - '--max-instances=5'
+      - '--max-instances=1'
       - '--concurrency=80'
       - '--timeout=300'
       - '--set-env-vars=NODE_ENV=production'
       - '--set-env-vars=API_PREFIX=api/v1'
-      - '--set-env-vars=CORS_ORIGIN=https://rovx-xxxxx.vercel.app'
+      - '--set-env-vars=CORS_ORIGIN=${_CORS_ORIGIN}'
       - '--set-env-vars=OSRM_URL=https://router.project-osrm.org'
+      - '--set-env-vars=REDIS_URL=${_REDIS_URL}'
+      - '--set-env-vars=AI_API_BASE_URL=${_AI_API_BASE_URL}'
+      - '--set-env-vars=AI_MODEL=${_AI_MODEL}'
       - '--set-secrets=DATABASE_URL=DATABASE_URL:latest'
       - '--set-secrets=JWT_SECRET=JWT_SECRET:latest'
       - '--set-secrets=JWT_REFRESH_SECRET=JWT_REFRESH_SECRET:latest'
+      - '--set-secrets=REDIS_URL=REDIS_URL:latest'
       - '--set-secrets=OPENAI_API_KEY=OPENAI_API_KEY:latest'
+
     id: 'deploy-backend'
+
+substitutions:
+  _REGION: us-central1
+  _CORS_ORIGIN: https://rovx.vercel.app
+  _REDIS_URL: redis://localhost:6379
+  _AI_API_BASE_URL: https://api.groq.com/openai/v1
+  _AI_MODEL: llama-3.3-70b-versatile
 
 availableSecrets:
   secretManager:
@@ -66,6 +79,8 @@ availableSecrets:
       env: 'JWT_SECRET'
     - versionName: projects/$PROJECT_ID/secrets/JWT_REFRESH_SECRET/versions/latest
       env: 'JWT_REFRESH_SECRET'
+    - versionName: projects/$PROJECT_ID/secrets/REDIS_URL/versions/latest
+      env: 'REDIS_URL'
     - versionName: projects/$PROJECT_ID/secrets/OPENAI_API_KEY/versions/latest
       env: 'OPENAI_API_KEY'
 

@@ -8,6 +8,7 @@ const nextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
+  serverExternalPackages: ['next-auth'],
   async rewrites() {
     return [];
   },

@@ -79,11 +79,11 @@ export default function NotificationsPage() {
   const formatTime = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.max(0, Math.floor(diff / 60000));
-    if (mins < 60) return `${mins} мин назад`;
+    if (mins < 60) return t('notifications.minAgo', { mins });
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} ч назад`;
+    if (hours < 24) return t('notifications.hoursAgo', { hours });
     const days = Math.floor(hours / 24);
-    return `${days} д назад`;
+    return t('notifications.daysAgo', { days });
   };
 
   if (!user) {
@@ -91,7 +91,7 @@ export default function NotificationsPage() {
       <div className="min-h-dvh bg-dark-bg flex flex-col items-center justify-center gap-4 px-6">
         <FaBell size={48} className="text-gray-600" />
         <p className="text-gray-400">{t('notifications.empty')}</p>
-        <button onClick={() => router.push('/auth/login')} className="btn-primary px-6 py-3">Sign In</button>
+        <button onClick={() => router.push('/auth/login')} className="btn-primary px-6 py-3">{t('notifications.signIn')}</button>
       </div>
     );
   }

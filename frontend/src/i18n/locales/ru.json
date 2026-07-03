@@ -49,7 +49,11 @@
     "signOut": "Выйти",
     "loggedOut": "Вы вышли",
     "brand": "ROVX",
-    "brandSubtitle": "AI Навигация"
+    "brandSubtitle": "AI Навигация",
+    "free": "Бесплатно",
+    "premiumBasic": "Premium Basic",
+    "premiumStandard": "Premium Standard",
+    "premiumMax": "Premium Max"
   },
   "searchPanel": {
     "categories": {
@@ -116,7 +120,9 @@
     "mapAction": "Карта",
     "startTyping": "Начните вводить, чтобы найти место",
     "noResults": "Ничего не найдено",
-    "foundNearby": "Найдено {{count}} мест рядом"
+    "foundNearby": "Найдено {{count}} мест рядом",
+    "km": "км",
+    "m": "м"
   },
   "routePanel": {
     "setOriginDest": "Укажите начальную и конечную точки",
@@ -164,7 +170,8 @@
     "destination": "Назначение",
     "km": "км",
     "m": "м",
-    "min": "мин"
+    "min": "мин",
+    "kmh": "км/ч"
   },
   "objectDetailPanel": {
     "categories": {
@@ -243,7 +250,10 @@
     "whatHappened": "Что случилось?",
     "chooseCategory": "Выберите категорию",
     "cityOnly": "Сообщение будет видно жителям {{city}}",
-    "sendToTelegram": "Отправлено в Telegram"
+    "sendToTelegram": "Отправлено в Telegram",
+    "status": "Статус",
+    "underReview": "На рассмотрении",
+    "discussInChat": "Обсудить в чате города"
   },
   "layerControls": {
     "title": "СЛОИ КАРТЫ",
@@ -270,9 +280,7 @@
   },
   "vehicleModeToggle": {
     "carMode": "Режим авто",
-    "truckMode": "Режим грузовика",
-    "motorcycleMode": "Режим мото",
-    "busMode": "Режим автобуса"
+    "truckMode": "Режим грузовика"
   },
   "mapView": {
     "seconds": {
@@ -305,7 +313,10 @@
       "submit": "Войти",
       "noAccount": "Нет аккаунта?",
       "createOne": "Создать",
-      "continueWithout": "Продолжить без аккаунта →"
+      "continueWithout": "Продолжить без аккаунта →",
+      "errorOAuthAccountNotLinked": "Этот Google-аккаунт уже привязан к другому пользователю",
+      "errorOAuthCallback": "Ошибка при входе через Google. Попробуйте снова.",
+      "errorDefault": "Ошибка авторизации. Попробуйте снова."
     },
     "register": {
       "passwordTooShort": "Пароль должен содержать минимум 8 символов",
@@ -447,7 +458,21 @@
     "title": "Сохранённые маршруты",
     "empty": "Пока нет сохранённых маршрутов.",
     "hint": "Постройте маршрут на карте!",
-    "openMap": "Открыть карту"
+    "openMap": "Открыть карту",
+    "km": "км",
+    "min": "мин",
+    "fallback1": "Дом → Офис",
+    "fallback2": "ул. Тверская, 12",
+    "fallback3": "Маршрут выходного дня",
+    "fallback4": "Аэропорт → Центр",
+    "fallback5": "Объезд МКАД",
+    "fallback6": "Дом",
+    "fallback7": "Офис",
+    "fallback8": "ул. Ленина, 1",
+    "fallback9": "Маршрут выходного дня",
+    "fallback10": "ул. Пушкина, 5",
+    "fallback11": "Аэропорт",
+    "fallback12": "ул. Арбат, 20"
   },
   "achievements": {
     "back": "Назад",
@@ -476,7 +501,11 @@
     "deleteAll": "Удалить всё",
     "deleteAllConfirm": "Удалить все уведомления?",
     "deleted": "Уведомления удалены",
-    "deleteFailed": "Не удалось удалить уведомления"
+    "deleteFailed": "Не удалось удалить уведомления",
+    "minAgo": "{{mins}} мин назад",
+    "hoursAgo": "{{hours}} ч назад",
+    "daysAgo": "{{days}} д назад",
+    "signIn": "Войти"
   },
   "errorBoundary": {
     "title": "Что-то пошло не так",
@@ -487,5 +516,142 @@
     "brand": "ROVX",
     "loading": "Загрузка карты...",
     "loadingRu": "Загрузка..."
+  },
+  "mapPage": {
+    "loading": "Загрузка карты..."
+  },
+  "friends": {
+    "requestSent": "Запрос отправлен",
+    "error": "Ошибка",
+    "requestAccepted": "Запрос принят",
+    "friendRemoved": "Друг удалён",
+    "loginRequired": "Войдите в аккаунт",
+    "signIn": "Войти",
+    "back": "Назад",
+    "title": "Друзья",
+    "friendsTab": "Друзья",
+    "requestsTab": "Запросы",
+    "searchPlaceholder": "Поиск пользователей...",
+    "friend": "Друг",
+    "pending": "Запрос отправлен",
+    "noUsers": "Пользователи не найдены",
+    "noRequests": "Нет входящих запросов",
+    "noFriends": "Пока нет друзей",
+    "findFriends": "Найти друзей",
+    "online": "В сети",
+    "offline": "Не в сети"
+  },
+  "fuel": {
+    "petrol95": "АИ-95",
+    "diesel": "Дизель",
+    "gas": "Газ",
+    "electric": "Электро",
+    "enterRoute": "Введите маршрут",
+    "calcDone": "Расчёт выполнен",
+    "calcError": "Ошибка расчёта",
+    "back": "Назад",
+    "title": "Калькулятор топлива",
+    "subtitle": "Рассчитайте стоимость поездки",
+    "history": "История",
+    "noHistory": "Нет истории расчётов",
+    "origin": "Откуда (город, адрес)",
+    "destination": "Куда (город, адрес)",
+    "consumption": "Расход (л/100км)",
+    "fuelType": "Тип топлива",
+    "calculate": "Рассчитать",
+    "results": "Результаты расчёта",
+    "distance": "Расстояние",
+    "time": "Время",
+    "fuel": "Топливо",
+    "cost": "Стоимость"
+  },
+  "groupDetails": {
+    "notFound": "Группа не найдена",
+    "noConnection": "Нет подключения к серверу",
+    "nameRequired": "Имя не может быть пустым",
+    "updated": "Группа обновлена",
+    "error": "Ошибка",
+    "deleteConfirm": "Удалить группу? Это действие необратимо.",
+    "deleted": "Группа удалена",
+    "deleteError": "Ошибка удаления",
+    "left": "Вы вышли из группы",
+    "members": "Участники",
+    "chat": "Чат",
+    "admin": "Админ",
+    "leave": "Выйти из группы",
+    "nameLabel": "Название",
+    "descriptionLabel": "Описание",
+    "cityLabel": "Город",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "messagePlaceholder": "Напишите сообщение..."
+  },
+  "chats": {
+    "joined": "Вступили",
+    "title": "Чаты",
+    "create": "Создать",
+    "searchGroups": "Поиск групп",
+    "cityChat": "Чат города",
+    "groups": "Группы",
+    "setCity": "Указать город",
+    "cityChatName": "Чат {{city}}",
+    "noMessages": "Пока нет сообщений",
+    "messagePlaceholder": "Напишите сообщение...",
+    "members": "Участники",
+    "signInRequired": "Войдите, чтобы использовать чаты"
+  },
+  "createGroup": {
+    "title": "Создать группу",
+    "nameLabel": "Название группы",
+    "namePlaceholder": "Введите название группы",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Введите описание",
+    "cityLabel": "Город",
+    "cityPlaceholder": "Введите город",
+    "publicLabel": "Публичная группа",
+    "publicDescription": "Любой может найти и присоединиться",
+    "submit": "Создать",
+    "back": "Назад",
+    "premiumRequired": "Требуется Premium",
+    "premiumDescription": "Только премиум-пользователи могут создавать группы",
+    "buyPremium": "Купить Premium",
+    "onlyPremium": "Только Premium",
+    "created": "Группа создана",
+    "createFailed": "Не удалось создать группу",
+    "uploadPhoto": "Загрузить фото"
+  },
+  "premium": {
+    "title": "Премиум возможности",
+    "subtitle": "Получите приоритетный статус, AI-ассистента и продвинутую навигацию",
+    "popular": "Популярно",
+    "bestValue": "Максимум",
+    "perMonth": "месяц",
+    "mostPopular": "Самая популярная · экономия 42% против Max",
+    "allIncluded": "Всё включено · безлимитный AI",
+    "greatStart": "Лучшее для начала",
+    "cancelSubscription": "Отменить подписку",
+    "currentPlan": "Текущий план",
+    "subscribe": "Подключить",
+    "activeUntil": "активна до",
+    "cancelled": "Подписка отменена",
+    "cancelError": "Ошибка отмены",
+    "paymentSuccess": "Оплата прошла! Премиум активирован.",
+    "paymentCanceled": "Оплата отменена. Деньги не списаны.",
+    "checkoutError": "Не удалось создать сессию оплаты",
+    "subscribeError": "Ошибка оформления подписки",
+    "features": {
+      "allRouteTypes": "Все типы маршрутов: быстрый, короткий, безопасный",
+      "voiceNav": "Голосовая навигация с TTS-озвучкой",
+      "instantReports": "Мгновенная отправка репортов на карту",
+      "noAds": "Без рекламы",
+      "aiAssistant": "AI-ассистент Co-Driver в реальном времени",
+      "camerasOnline": "Светофоры, радары и камеры онлайн",
+      "weatherTraffic": "Погода и пробки по маршруту",
+      "groups": "До 3 групп и City-чаты",
+      "unlimitedAI": "Безлимитные AI голосовые команды",
+      "_3dMaps": "3D-карты со зданиями (эксклюзив)",
+      "convoys": "Создание групп и конвоев до 10 шт",
+      "support247": "Приоритетная поддержка 24/7"
+    }
   }
 }

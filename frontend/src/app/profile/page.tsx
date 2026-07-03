@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +25,6 @@ const CAR_MAKES_LIST = [
   'Vauxhall','VinFast','Volkswagen','Volvo','Vortex','Voyah','Wartburg','Xiaomi','XPeng','Zaporozhets','ZAZ','Zeekr','Zotye',
 ];
 
-const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = Array.from({ length: CURRENT_YEAR - 1969 + 1 }, (_, i) => CURRENT_YEAR - i);
-
 export default function ProfilePage() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -35,7 +32,9 @@ export default function ProfilePage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [addForm, setAddForm] = useState({ type: 'CAR' as 'CAR' | 'TRUCK', make: '', model: '', year: CURRENT_YEAR });
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const years = useMemo(() => Array.from({ length: currentYear - 1969 + 1 }, (_, i) => currentYear - i), [currentYear]);
+  const [addForm, setAddForm] = useState({ type: 'CAR' as 'CAR' | 'TRUCK', make: '', model: '', year: currentYear });
   const [addLoading, setAddLoading] = useState(false);
 
   // Edit profile state
@@ -93,7 +92,7 @@ export default function ProfilePage() {
       const newVehicle = res.data.data || res.data;
       setVehicles(prev => [...prev, newVehicle]);
       setShowAddForm(false);
-      setAddForm({ type: 'CAR', make: '', model: '', year: CURRENT_YEAR });
+      setAddForm({ type: 'CAR', make: '', model: '', year: currentYear });
       toast.success(t('profile.vehicleAdded'));
     } catch {
       toast.error(t('profile.vehicleAddFailed'));
@@ -306,7 +305,7 @@ export default function ProfilePage() {
               <div className="mb-3">
                 <select value={addForm.year} onChange={e => setAddForm(p => ({ ...p, year: Number(e.target.value) }))}
                   className="input-field text-sm appearance-none">
-                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                  {years.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
 

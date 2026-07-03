@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaRoute, FaMapMarkerAlt, FaClock, FaTimes, FaSpinner } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { routesApi } from '@/lib/api';
@@ -10,18 +10,17 @@ import { useMapStore } from '@/store/map.store';
 
 interface SavedRoute { id: string; name: string; from: string; to: string; distance: string; duration: string; }
 
-const FALLBACK_ROUTES: SavedRoute[] = [
-  { id: '1', name: 'Дом → Офис', from: 'ул. Тверская, 12', to: 'БЦ "Москва-Сити"', distance: '12.4 км', duration: '28 мин' },
-  { id: '2', name: 'Выходной маршрут', from: 'Дом', to: 'Парк Горького', distance: '5.2 км', duration: '14 мин' },
-  { id: '3', name: 'Аэропорт → Центр', from: 'Шереметьево', to: 'Красная площадь', distance: '35.6 км', duration: '45 мин' },
-  { id: '4', name: 'Объезд МКАД', from: 'ул. Профсоюзная', to: 'Ярославское ш.', distance: '28.1 км', duration: '38 мин' },
-];
-
 export default function RoutesPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const [routes, setRoutes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const FALLBACK_ROUTES: SavedRoute[] = useMemo(() => [
+    { id: '1', name: t('routes.fallback1'), from: t('routes.fallback5'), to: t('routes.fallback9'), distance: `12.4 ${t('routes.km')}`, duration: `28 ${t('routes.min')}` },
+    { id: '2', name: t('routes.fallback2'), from: t('routes.fallback6'), to: t('routes.fallback10'), distance: `5.2 ${t('routes.km')}`, duration: `14 ${t('routes.min')}` },
+    { id: '3', name: t('routes.fallback3'), from: t('routes.fallback7'), to: t('routes.fallback11'), distance: `35.6 ${t('routes.km')}`, duration: `45 ${t('routes.min')}` },
+    { id: '4', name: t('routes.fallback4'), from: t('routes.fallback8'), to: t('routes.fallback12'), distance: `28.1 ${t('routes.km')}`, duration: `38 ${t('routes.min')}` },
+  ], [t]);
 
   useEffect(() => {
     routesApi.getSaved().then(res => {
@@ -31,8 +30,8 @@ export default function RoutesPage() {
         name: r.name,
         from: r.originName || r.from || '',
         to: r.destName || r.to || '',
-        distance: typeof r.distance === 'number' ? `${r.distance} км` : r.distance || '',
-        duration: typeof r.duration === 'number' ? `${r.duration} мин` : r.duration || '',
+        distance: typeof r.distance === 'number' ? `${r.distance} ${t('routes.km')}` : r.distance || '',
+        duration: typeof r.duration === 'number' ? `${r.duration} ${t('routes.min')}` : r.duration || '',
         originLat: r.originLat,
         originLng: r.originLng,
         destLat: r.destLat,

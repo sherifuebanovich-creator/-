@@ -8,12 +8,12 @@ export function I18nInitializer() {
 
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('preferred_lang') : null;
-    const lang = user?.preferredLang || stored || i18n.language || 'ru';
+    const lang = stored || user?.preferredLang || i18n.language || 'ru';
     if (i18n.language !== lang) {
       i18n.changeLanguage(lang);
     }
     document.documentElement.lang = lang;
-  }, [user?.preferredLang]);
+  }, [user?.preferredLang, user?.id]);
 
   useEffect(() => {
     const handler = (lng: string) => {

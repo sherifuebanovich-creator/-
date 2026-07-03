@@ -56,9 +56,13 @@ export class ReportsController {
   @Post('validate-photo')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Validate photo matches the report type using AI' })
-  async validatePhoto(@Body('imageUrl') imageUrl: string, @Body('reportType') reportType?: string) {
-    return this.reportsService.validatePhoto(imageUrl, reportType);
+  @ApiOperation({ summary: 'Validate photo matches the report type/description using AI' })
+  async validatePhoto(
+    @Body('imageUrl') imageUrl: string,
+    @Body('reportType') reportType?: string,
+    @Body('description') description?: string,
+  ) {
+    return this.reportsService.validatePhoto(imageUrl, reportType, description);
   }
 
   @Get('limit')

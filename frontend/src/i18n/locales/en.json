@@ -23,7 +23,16 @@
   },
   "topbar": {
     "to": "To",
-    "whereTo": "Where to?"
+    "whereTo": "Where to?",
+    "style2d": "2D",
+    "satellite": "Satellite",
+    "mapMode": "Map mode",
+    "style3d": "3D",
+    "view": "View",
+    "view3dBuildings": "3D Buildings",
+    "myLocation": "My location",
+    "lightTheme": "Light theme",
+    "darkTheme": "Dark theme"
   },
   "bottombar": {
     "map": "Map",
@@ -116,7 +125,9 @@
     "mapAction": "Map",
     "startTyping": "Start typing to find a place",
     "noResults": "No results found",
-    "foundNearby": "Found {{count}} places nearby"
+    "foundNearby": "Found {{count}} places nearby",
+    "km": "km",
+    "m": "m"
   },
   "routePanel": {
     "setOriginDest": "Set origin and destination first",
@@ -164,7 +175,8 @@
     "destination": "Destination",
     "km": "km",
     "m": "m",
-    "min": "min"
+    "min": "min",
+    "kmh": "km/h"
   },
   "objectDetailPanel": {
     "categories": {
@@ -243,7 +255,10 @@
     "whatHappened": "What happened?",
     "chooseCategory": "Choose category",
     "cityOnly": "This report will be visible to residents of {{city}}",
-    "sendToTelegram": "Sent to Telegram"
+    "sendToTelegram": "Sent to Telegram",
+    "status": "Status",
+    "underReview": "Under review",
+    "discussInChat": "Discuss in city chat"
   },
   "layerControls": {
     "title": "MAP LAYERS",
@@ -303,7 +318,10 @@
       "submit": "Sign In",
       "noAccount": "No account?",
       "createOne": "Create one",
-      "continueWithout": "Continue without account →"
+      "continueWithout": "Continue without account →",
+      "errorOAuthAccountNotLinked": "This Google account is already linked to another user",
+      "errorOAuthCallback": "Google sign-in failed. Please try again.",
+      "errorDefault": "Authentication failed. Please try again."
     },
     "verify": {
       "title": "Verify Your Email",
@@ -445,7 +463,21 @@
     "title": "Saved Routes",
     "empty": "No saved routes yet.",
     "hint": "Plan a trip on the map!",
-    "openMap": "Open Map"
+    "openMap": "Open Map",
+    "km": "km",
+    "min": "min",
+    "fallback1": "Home → Office",
+    "fallback2": "ul. Tverskaya, 12",
+    "fallback3": "Weekend route",
+    "fallback4": "Airport → Center",
+    "fallback5": "Moscow Ring Road bypass",
+    "fallback6": "Home",
+    "fallback7": "Office",
+    "fallback8": "ul. Lenina, 1",
+    "fallback9": "Weekend route",
+    "fallback10": "ul. Pushkina, 5",
+    "fallback11": "Airport",
+    "fallback12": "ul. Arbat, 20"
   },
   "achievements": {
     "back": "Back",
@@ -474,7 +506,11 @@
     "deleteAll": "Delete all",
     "deleteAllConfirm": "Delete all notifications?",
     "deleted": "Notifications deleted",
-    "deleteFailed": "Failed to delete notifications"
+    "deleteFailed": "Failed to delete notifications",
+    "minAgo": "{{mins}} min ago",
+    "hoursAgo": "{{hours}} h ago",
+    "daysAgo": "{{days}} d ago",
+    "signIn": "Sign In"
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -485,5 +521,142 @@
     "brand": "ROVX",
     "loading": "Loading map...",
     "loadingRu": "Загрузка..."
+  },
+  "mapPage": {
+    "loading": "Loading map..."
+  },
+  "friends": {
+    "requestSent": "Request sent",
+    "error": "Error",
+    "requestAccepted": "Request accepted",
+    "friendRemoved": "Friend removed",
+    "loginRequired": "Sign in to your account",
+    "signIn": "Sign In",
+    "back": "Back",
+    "title": "Friends",
+    "friendsTab": "Friends",
+    "requestsTab": "Requests",
+    "searchPlaceholder": "Search users...",
+    "friend": "Friend",
+    "pending": "Request sent",
+    "noUsers": "No users found",
+    "noRequests": "No incoming requests",
+    "noFriends": "No friends yet",
+    "findFriends": "Find Friends",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "fuel": {
+    "petrol95": "AI-95",
+    "diesel": "Diesel",
+    "gas": "Gas",
+    "electric": "Electric",
+    "enterRoute": "Enter a route",
+    "calcDone": "Calculation done",
+    "calcError": "Calculation error",
+    "back": "Back",
+    "title": "Fuel Calculator",
+    "subtitle": "Calculate trip cost",
+    "history": "History",
+    "noHistory": "No calculation history",
+    "origin": "From (city, address)",
+    "destination": "To (city, address)",
+    "consumption": "Consumption (L/100km)",
+    "fuelType": "Fuel type",
+    "calculate": "Calculate",
+    "results": "Calculation results",
+    "distance": "Distance",
+    "time": "Time",
+    "fuel": "Fuel",
+    "cost": "Cost"
+  },
+  "groupDetails": {
+    "notFound": "Group not found",
+    "noConnection": "No connection to server",
+    "nameRequired": "Name cannot be empty",
+    "updated": "Group updated",
+    "error": "Error",
+    "deleteConfirm": "Delete group? This action is irreversible.",
+    "deleted": "Group deleted",
+    "deleteError": "Delete error",
+    "left": "You left the group",
+    "members": "Members",
+    "chat": "Chat",
+    "admin": "Admin",
+    "leave": "Leave group",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "cityLabel": "City",
+    "cancel": "Cancel",
+    "save": "Save",
+    "messagePlaceholder": "Write a message..."
+  },
+  "chats": {
+    "joined": "Joined",
+    "title": "Chats",
+    "create": "Create",
+    "searchGroups": "Search groups",
+    "cityChat": "City Chat",
+    "groups": "Groups",
+    "setCity": "Set city",
+    "cityChatName": "{{city}} Chat",
+    "noMessages": "No messages yet",
+    "messagePlaceholder": "Type a message...",
+    "members": "Members",
+    "signInRequired": "Sign in to use chats"
+  },
+  "createGroup": {
+    "title": "Create Group",
+    "nameLabel": "Group name",
+    "namePlaceholder": "Enter group name",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "cityLabel": "City",
+    "cityPlaceholder": "Enter city",
+    "publicLabel": "Public group",
+    "publicDescription": "Anyone can find and join",
+    "submit": "Create",
+    "back": "Back",
+    "premiumRequired": "Premium required",
+    "premiumDescription": "Only premium users can create groups",
+    "buyPremium": "Get Premium",
+    "onlyPremium": "Premium only",
+    "created": "Group created",
+    "createFailed": "Failed to create group",
+    "uploadPhoto": "Upload photo"
+  },
+  "premium": {
+    "title": "Premium Features",
+    "subtitle": "Get priority status, AI assistant and advanced navigation",
+    "popular": "Popular",
+    "bestValue": "Best Value",
+    "perMonth": "month",
+    "mostPopular": "Most popular · 42% off vs Max",
+    "allIncluded": "All included · unlimited AI",
+    "greatStart": "Best to start with",
+    "cancelSubscription": "Cancel Subscription",
+    "currentPlan": "Current Plan",
+    "subscribe": "Subscribe",
+    "activeUntil": "active until",
+    "cancelled": "Subscription cancelled",
+    "cancelError": "Failed to cancel",
+    "paymentSuccess": "Payment successful! Your premium is now active.",
+    "paymentCanceled": "Payment was canceled. No charges were made.",
+    "checkoutError": "Failed to create checkout session",
+    "subscribeError": "Failed to process subscription",
+    "features": {
+      "allRouteTypes": "All route types: fastest, shortest, safest",
+      "voiceNav": "Voice navigation with TTS",
+      "instantReports": "Instant report submission on map",
+      "noAds": "Ad-free experience",
+      "aiAssistant": "AI Co-Driver in real-time",
+      "camerasOnline": "Traffic lights, radars and cameras online",
+      "weatherTraffic": "Weather and traffic along the route",
+      "groups": "Up to 3 groups and City chats",
+      "unlimitedAI": "Unlimited AI voice commands",
+      "_3dMaps": "3D maps with buildings (exclusive)",
+      "convoys": "Create convoys and groups (up to 10)",
+      "support247": "Priority 24/7 support"
+    }
   }
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import Cookies from 'js-cookie';
 import { useAuthStore } from '@/store/auth.store';
@@ -36,17 +35,12 @@ export default function MapAppLoader() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
-  const { status: sessionStatus } = useSession();
-  const hasAccessToken = typeof window !== 'undefined' ? !!Cookies.get('access_token') : false;
-  const isActuallyAuthed = isAuthenticated || hasAccessToken || user !== null;
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (sessionStatus === 'loading') return;
-
     const hasToken = !!Cookies.get('access_token');
 
-    if (isAuthenticated || user || sessionStatus === 'authenticated' || hasToken) {
+    if (isAuthenticated || user || hasToken) {
       setChecking(false);
       return;
     }
@@ -58,9 +52,9 @@ export default function MapAppLoader() {
     } else {
       router.replace('/auth/login');
     }
-  }, [isAuthenticated, user, router, sessionStatus]);
+  }, [isAuthenticated, user, router]);
 
-  if (checking && !isActuallyAuthed && sessionStatus !== 'authenticated') {
+  if (checking) {
     return (
       <div className="flex items-center justify-center w-full h-dvh bg-dark-bg">
         <div className="flex flex-col items-center gap-4">

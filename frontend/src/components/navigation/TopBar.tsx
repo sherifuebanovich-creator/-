@@ -54,8 +54,8 @@ export function TopBar() {
   }, [user, checkUnread]);
 
   const mapModes = [
-    { key: 'streets', label: '2D', icon: <FaLayerGroup size={13} /> },
-    { key: 'satellite', label: 'Спутник', icon: <FaSatellite size={13} /> },
+    { key: 'streets', label: t('topbar.style2d'), icon: <FaLayerGroup size={13} /> },
+    { key: 'satellite', label: t('topbar.satellite'), icon: <FaSatellite size={13} /> },
   ] as const;
 
   return (
@@ -85,7 +85,7 @@ export function TopBar() {
             <button
               onClick={() => setShowModeMenu(!showModeMenu)}
               className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
-              title="Режим карты"
+              title={t('topbar.mapMode')}
             >
               <FaCube size={15} className="text-primary-400" />
             </button>
@@ -93,7 +93,7 @@ export function TopBar() {
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowModeMenu(false)} />
                 <div className="absolute right-0 top-12 z-20 glass-dark rounded-2xl p-2 min-w-[180px] shadow-2xl border border-dark-border">
-                  <p className="text-[10px] text-gray-500 uppercase font-bold px-3 py-1.5 tracking-wider">Режим карты</p>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold px-3 py-1.5 tracking-wider">{t('topbar.mapMode')}</p>
                   {mapModes.map((mode) => (
                     <button
                       key={mode.key}
@@ -105,12 +105,12 @@ export function TopBar() {
                       {mode.icon}
                       {mode.label}
                       {mode.key === 'satellite' ? '' : (
-                        <span className="text-[10px] text-gray-500 ml-auto">3D</span>
+                        <span className="text-[10px] text-gray-500 ml-auto">{t('topbar.style3d')}</span>
                       )}
                     </button>
                   ))}
                   <div className="border-t border-dark-border my-1.5 mx-2" />
-                  <p className="text-[10px] text-gray-500 uppercase font-bold px-3 py-1.5 tracking-wider">Вид</p>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold px-3 py-1.5 tracking-wider">{t('topbar.view')}</p>
                   <button
                     onClick={() => {
                       useMapStore.getState().toggle3D();
@@ -121,7 +121,7 @@ export function TopBar() {
                     }`}
                   >
                     <FaCube size={13} />
-                    3D Здания
+                    {t('topbar.view3dBuildings')}
                   </button>
                 </div>
               </>
@@ -137,7 +137,7 @@ export function TopBar() {
               }
             }}
             className={`flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all ${userLocation ? 'text-primary-400' : 'text-gray-600'}`}
-            title="Моё местоположение"
+            title={t('topbar.myLocation')}
           >
             <FaCrosshairs size={15} />
           </button>
@@ -153,7 +153,7 @@ export function TopBar() {
               else if (!next && mapStyle === 'night') setMapStyle('streets');
             }}
             className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
-            title={darkMode ? 'Светлая тема' : 'Тёмная тема'}
+            title={darkMode ? t('topbar.lightTheme') : t('topbar.darkTheme')}
           >
             {darkMode ? <FaSun size={15} className="text-yellow-400" /> : <FaMoon size={15} className="text-gray-300" />}
           </button>

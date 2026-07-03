@@ -52,6 +52,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
+              var lang = localStorage.getItem('preferred_lang');
+              if (lang) document.documentElement.lang = lang;
               var dark = localStorage.getItem('darkMode');
               if (dark === 'false') document.documentElement.classList.remove('dark');
               else document.documentElement.classList.add('dark');

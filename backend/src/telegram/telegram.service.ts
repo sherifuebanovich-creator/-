@@ -21,6 +21,8 @@ export class TelegramService {
     severity: number;
     images?: string[];
     address?: string;
+    city?: string;
+    time?: string;
     userDisplayName?: string;
   }) {
     if (!this.botToken || !this.chatId) {
@@ -30,14 +32,20 @@ export class TelegramService {
 
     const severityEmoji = report.severity >= 4 ? '🔴' : report.severity >= 3 ? '🟡' : '🟢';
     const mapLink = `https://www.google.com/maps?q=${report.lat},${report.lng}`;
+    const coordsText = `${report.lat.toFixed(6)}, ${report.lng.toFixed(6)}`;
 
     let text = `${severityEmoji} <b>НОВЫЙ РЕПОРТ</b>\n`;
-    text += `<b>Тип:</b> ${report.type}\n`;
-    text += `<b>Серьёзность:</b> ${report.severity}/5\n`;
-    if (report.address) text += `<b>Адрес:</b> ${report.address}\n`;
-    if (report.description) text += `<b>Описание:</b> ${report.description}\n`;
-    if (report.userDisplayName) text += `<b>От:</b> ${report.userDisplayName}\n`;
-    text += `<b>Карта:</b> ${mapLink}`;
+    text += `━━━━━━━━━━━━━━━\n`;
+    text += `<b>🕐 Время:</b> ${report.time || 'не указано'}\n`;
+    text += `<b>🏙 Город:</b> ${report.city || 'не определён'}\n`;
+    text += `<b>📌 Тип:</b> ${report.type}\n`;
+    text += `<b>⚠️ Серьёзность:</b> ${report.severity}/5\n`;
+    if (report.address) text += `<b>📍 Адрес:</b> ${report.address}\n`;
+    text += `<b>🌐 Координаты:</b> ${coordsText}\n`;
+    text += `<b>🗺 Карта:</b> ${mapLink}\n`;
+    if (report.description) text += `<b>📝 Описание:</b> ${report.description}\n`;
+    text += `━━━━━━━━━━━━━━━\n`;
+    if (report.userDisplayName) text += `<b>👤 От:</b> ${report.userDisplayName}\n`;
 
     try {
       if (report.images && report.images.length > 0) {

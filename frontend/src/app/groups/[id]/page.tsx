@@ -8,6 +8,7 @@ import { useSocket, getSocket } from '@/hooks/useSocket';
 import { Group, GroupMessage } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowLeft, FaUsers, FaEdit, FaTrash, FaTimes, FaSave, FaPaperPlane } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function GroupChatPage() {
@@ -17,6 +18,7 @@ export default function GroupChatPage() {
   const { user } = useAuthStore();
   const { socket } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { t, i18n } = useTranslation();
 
   const [group, setGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<GroupMessage[]>([]);
@@ -75,7 +77,7 @@ export default function GroupChatPage() {
       const msgs = mRes.data?.data || mRes.data;
       setMessages(msgs?.messages || msgs || []);
     }).catch(() => {
-      toast.error('Группа не найдена');
+      toast.error(t('groupDetails.notFound'));
       router.push('/groups');
     }).finally(() => setLoading(false));
 
@@ -101,7 +103,7 @@ export default function GroupChatPage() {
     if (!input.trim()) return;
     const ws = getSocket();
     if (!ws?.connected) {
-      toast.error('Нет соединения с сервером');
+      toast.error(t('groupDetails.noConnection'));
       return;
     }
     ws.emit('group:message', {
@@ -112,35 +114,35 @@ export default function GroupChatPage() {
   };
 
   const handleEditGroup = async () => {
-    if (!editForm.name.trim()) { toast.error('Название не может быть пустым'); return; }
+    if (!editForm.name.trim()) { toast.error(t('groupDetails.nameRequired')); return; }
     setEditLoading(true);
     try {
       const res = await socialApi.updateGroup(groupId, editForm);
       setGroup(res.data?.data || res.data);
       setEditing(false);
-      toast.success('Группа обновлена');
+      toast.success(t('groupDetails.updated'));
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Ошибка');
+      toast.error(err?.response?.data?.message || t('groupDetails.error'));
     } finally {
       setEditLoading(false);
     }
   };
 
   const handleDeleteGroup = async () => {
-    if (!confirm('Удалить группу? Это действие необратимо.')) return;
+    if (!confirm(t('groupDetails.deleteConfirm'))) return;
     try {
       await socialApi.deleteGroup(groupId);
-      toast.success('Группа удалена');
+      toast.success(t('groupDetails.deleted'));
       router.push('/groups');
-    } catch { toast.error('Ошибка удаления'); }
+    } catch { toast.error(t('groupDetails.deleteError')); }
   };
 
   const leaveGroup = async () => {
     try {
       await socialApi.leaveGroup(groupId);
-      toast.success('Вы вышли из группы');
+      toast.success(t('groupDetails.left'));
       router.push('/groups');
-    } catch { toast.error('Ошибка'); }
+    } catch { toast.error(t('groupDetails.error')); }
   };
 
   if (!user) return null;
@@ -170,11 +172,11 @@ export default function GroupChatPage() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-white font-semibold truncate">{group.name}</p>
-          <p className="text-xs text-gray-500">{group.memberCount} участников</p>
+          <p className="text-xs text-gray-500">{group.memberCount} {t('groupDetails.members')}</p>
         </div>
         <button onClick={() => setShowMembers(!showMembers)}
           className="px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 text-xs hover:bg-white/10">
-          {showMembers ? 'Чат' : 'Участники'}
+          {showMembers ? t('groupDetails.chat') : t('groupDetails.members')}
         </button>
         {isOwner && (
           <div className="flex gap-1">
@@ -200,19 +202,19 @@ export default function GroupChatPage() {
             className="overflow-hidden border-b border-white/10"
           >
             <div className="p-4 space-y-2">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Участники ({group.members?.length})</p>
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{t('groupDetails.members')} ({group.members?.length})</p>
               {group.members?.map(m => (
                 <div key={m.id} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center text-white text-xs font-bold">
                     {m.user?.displayName?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <span className="text-sm text-white">{m.user.displayName}</span>
-                  {m.isAdmin && <span className="text-[10px] text-primary-400 bg-primary-600/20 px-1.5 py-0.5 rounded">Админ</span>}
+                  {m.isAdmin && <span className="text-[10px] text-primary-400 bg-primary-600/20 px-1.5 py-0.5 rounded">{t('groupDetails.admin')}</span>}
                 </div>
               ))}
               {!isOwner && (
                 <button onClick={leaveGroup} className="mt-3 text-xs text-red-400 hover:text-red-300">
-                  Покинуть группу
+                  {t('groupDetails.leave')}
                 </button>
               )}
             </div>
@@ -231,19 +233,19 @@ export default function GroupChatPage() {
           >
             <div className="p-4 space-y-2">
               <input value={editForm.name} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))}
-                className="input-field text-sm" placeholder="Название" />
+                className="input-field text-sm" placeholder={t('groupDetails.nameLabel')} />
               <input value={editForm.description} onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
-                className="input-field text-sm" placeholder="Описание" />
+                className="input-field text-sm" placeholder={t('groupDetails.descriptionLabel')} />
               <input value={editForm.city} onChange={e => setEditForm(p => ({ ...p, city: e.target.value }))}
-                className="input-field text-sm" placeholder="Город" />
+                className="input-field text-sm" placeholder={t('groupDetails.cityLabel')} />
               <div className="flex gap-2">
                 <button onClick={() => setEditing(false)}
                   className="flex-1 py-2 rounded-xl text-sm bg-white/5 text-gray-400 hover:bg-white/10">
-                  Отмена
+                  {t('groupDetails.cancel')}
                 </button>
                 <button onClick={handleEditGroup} disabled={editLoading}
                   className="flex-1 py-2 rounded-xl text-sm bg-primary-600 text-white hover:bg-primary-500 flex items-center justify-center gap-1">
-                  {editLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><FaSave size={12} /> Сохранить</>}
+                  {editLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><FaSave size={12} /> {t('groupDetails.save')}</>}
                 </button>
               </div>
             </div>
@@ -265,7 +267,7 @@ export default function GroupChatPage() {
               )}
               <p className="text-sm leading-relaxed">{msg.content}</p>
               <p className="text-[10px] opacity-50 text-right mt-1">
-                {new Date(msg.createdAt).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.createdAt).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
           </div>
@@ -278,7 +280,7 @@ export default function GroupChatPage() {
         <div className="flex items-center gap-2">
           <input value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            className="input-field flex-1 text-sm" placeholder="Написать сообщение..." />
+            className="input-field flex-1 text-sm" placeholder={t('groupDetails.messagePlaceholder')} />
           <button onClick={sendMessage} disabled={!input.trim()}
             className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary-600 text-white hover:bg-primary-500 transition-all disabled:opacity-50">
             <FaPaperPlane size={14} />

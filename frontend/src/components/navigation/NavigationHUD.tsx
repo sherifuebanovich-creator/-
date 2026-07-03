@@ -280,7 +280,7 @@ export function NavigationHUD() {
             <p className="text-lg font-bold text-white tabular-nums">
               {userSpeed > 0 ? `${Math.round(userSpeed)}` : '--'}
             </p>
-            <p className="text-[10px] text-gray-400">км/ч</p>
+            <p className="text-[10px] text-gray-400">{t('navigationHud.kmh')}</p>
           </div>
 
           {/* ETA */}

@@ -90,7 +90,7 @@ export function ReportPanel() {
     const validations: boolean[] = [];
     for (let i = 0; i < newPhotos.length; i++) {
       try {
-        const res = await reportsApi.validatePhoto(newPhotos[i], selectedType || undefined);
+        const res = await reportsApi.validatePhoto(newPhotos[i], selectedType || undefined, description || undefined);
         const result = res.data.data || res.data;
         if (result.valid) {
           validations.push(true);
@@ -236,8 +236,8 @@ export function ReportPanel() {
                     <span className="text-white font-mono">#{submittedData.id.slice(0, 8)}</span>
                   </div>
                   <div className="flex justify-between text-gray-400">
-                    <span>Статус</span>
-                    <span className="text-green-400 font-medium capitalize">{submittedData.status || 'На рассмотрении'}</span>
+                    <span>{t('reportPanel.status')}</span>
+                    <span className="text-green-400 font-medium capitalize">{submittedData.status || t('reportPanel.underReview')}</span>
                   </div>
                   {submittedData.severity && (
                     <div className="flex justify-between text-gray-400">
@@ -255,7 +255,7 @@ export function ReportPanel() {
                 }}
                 className="mt-3 w-full py-3 rounded-xl bg-primary-600/20 text-primary-400 border border-primary-500/30 text-sm font-medium flex items-center justify-center gap-2 hover:bg-primary-600/30 transition-all"
               >
-                <FaCommentDots size={14} /> Обсудить в чате города
+                <FaCommentDots size={14} /> {t('reportPanel.discussInChat')}
               </button>
             </motion.div>
           ) : (

@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -13,8 +13,9 @@ import { authApi } from '@/lib/api';
 import LanguagePicker from '@/components/auth/LanguagePicker';
 import toast from 'react-hot-toast';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const { setUser, setTokens } = useAuthStore();
   const [identifier, setIdentifier] = useState('');
@@ -23,6 +24,20 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [googleLang, setGoogleLang] = useState('en');
+
+  useEffect(() => {
+    const errorParam = searchParams?.get('error');
+    if (errorParam) {
+      const errorMap: Record<string, string> = {
+        AccessDenied: 'auth.login.errorDefault',
+        OAuthAccountNotLinked: 'auth.login.errorOAuthAccountNotLinked',
+        OAuthCallback: 'auth.login.errorOAuthCallback',
+        Default: 'auth.login.errorDefault',
+      };
+      const key = errorMap[errorParam] || errorMap.Default;
+      toast.error(t(key));
+    }
+  }, [searchParams, t]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +48,7 @@ export default function LoginPage() {
       const { user, accessToken, refreshToken } = res.data.data || res.data || {};
       setTokens(accessToken, refreshToken);
       setUser(user);
-      toast.success(`Welcome back, ${user.displayName}!`);
+      toast.success(t('auth.login.welcomeBack') + `, ${user.displayName}!`);
       router.push('/');
     } catch (err: any) {
       const errData = err?.response?.data;
@@ -192,5 +207,13 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-dvh bg-dark-bg flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" /></div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

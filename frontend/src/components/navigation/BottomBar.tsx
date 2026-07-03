@@ -22,7 +22,7 @@ export function BottomBar() {
     { id: 'map', icon: <FaMap size={20} />, label: t('bottombar.map'), action: () => { if (!followUser) setFollowUser(true); } },
     { id: 'route', icon: <FaCompass size={20} />, label: t('bottombar.route'), action: toggleRoutesPanel },
     { id: 'report', icon: <FaExclamationTriangle size={20} />, label: t('bottombar.report'), action: toggleReportPanel },
-    { id: 'chats', icon: <FaCommentDots size={20} />, label: 'Чаты', href: '/chats' },
+    { id: 'chats', icon: <FaCommentDots size={20} />, label: t('bottombar.social'), href: '/chats' },
   ];
 
   return (

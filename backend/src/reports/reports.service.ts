@@ -41,7 +41,7 @@ const ReportStatus = {
   RESOLVED: 'RESOLVED',
 } as const;
 
-const MAX_REPORTS_PER_USER = 10;
+const MAX_REPORTS_PER_USER = 3;
 const REPORT_WINDOW_DAYS = 7;
 
 const REPORT_TYPE_LABELS: Record<string, string> = {
@@ -124,7 +124,11 @@ export class ReportsService {
     }
   }
 
-  async validatePhoto(imageUrl: string, reportType?: string): Promise<{ valid: boolean; reason?: string }> {
+  async validatePhoto(
+    imageUrl: string,
+    reportType?: string,
+    description?: string,
+  ): Promise<{ valid: boolean; reason?: string }> {
     const apiKey = this.config.get('OPENAI_API_KEY');
     if (!apiKey) {
       this.logger.warn('No AI API key, skipping photo validation');
@@ -133,7 +137,28 @@ export class ReportsService {
 
     const typeLabel = reportType ? (REPORT_TYPE_LABELS[reportType] || reportType) : 'дорожная ситуация';
 
-    const prompt = `Проанализируй это изображение и определи, соответствует ли оно заявленному типу события.
+    let prompt: string;
+    if (description && description.trim()) {
+      prompt = `Проанализируй это изображение и определи, соответствует ли оно описанию события.
+
+Описание: "${description}"
+
+Тип события: "${typeLabel}"
+
+Правила проверки:
+- Если на фото видно то, что описано в тексте — ответь valid: true
+- Если фото не связано с дорогой, транспортом или улицей (селфи, еда, животные, интерьер, природа без дорог) — valid: false
+- Если на фото НЕ то, что описано в тексте (например, в описании "яма", а на фото авария) — valid: false с пояснением
+
+Ответь JSON:
+{
+  "valid": boolean,
+  "reason": "краткое пояснение на русском (до 100 символов)"
+}
+
+Будь строгим. Если фото не соответствует описанию — отклоняй.`;
+    } else {
+      prompt = `Проанализируй это изображение и определи, соответствует ли оно заявленному типу события.
 
 Заявленный тип события: "${typeLabel}"
 
@@ -149,6 +174,7 @@ export class ReportsService {
 }
 
 Будь строгим. Если на фото нет явных признаков заявленного типа события — отклоняй.`;
+    }
 
     try {
       const response = await axios.post(
@@ -278,15 +304,28 @@ export class ReportsService {
     return users.map(u => u.id);
   }
 
+  private async getCityFromCoords(lat: number, lng: number): Promise<string | null> {
+    try {
+      const res = await axios.get(
+        `https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`,
+        { timeout: 2000 },
+      );
+      const props = res.data.features?.[0]?.properties;
+      return props?.city || props?.town || props?.village || props?.municipality || props?.county || null;
+    } catch {
+      return null;
+    }
+  }
+
   async createReport(userId: string, dto: CreateReportDto) {
     await this.checkReportLimit(userId);
 
-    // AI validate photos
+    // AI validate photos against description
     if (dto.images && dto.images.length > 0) {
       for (const img of dto.images) {
-        const validation = await this.validatePhoto(img, dto.type);
+        const validation = await this.validatePhoto(img, dto.type, dto.description);
         if (!validation.valid) {
-          throw new BadRequestException(validation.reason || 'Фото не соответствует заявленному типу');
+          throw new BadRequestException(validation.reason || 'Фото не соответствует описанию');
         }
       }
     }
@@ -338,6 +377,14 @@ export class ReportsService {
     // 1. Broadcast via WebSocket to nearby area
     await this.gateway.broadcastReport(report);
 
+    // --- Common data for notifications ---
+    const timeStr = new Date().toLocaleString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+    const typeLabel = REPORT_TYPE_LABELS[dto.type] || dto.type;
+    const reportCity = dto.city || (await this.getCityFromCoords(dto.lat, dto.lng));
+
     // 2. Send to Telegram bot
     await this.telegram.sendReportNotification({
       type: dto.type,
@@ -347,16 +394,13 @@ export class ReportsService {
       severity: dto.severity || 3,
       images: dto.images,
       address: dto.address,
+      city: reportCity || undefined,
+      time: timeStr,
       userDisplayName: report.user?.displayName,
     });
 
     // 3. Send to all Premium users (tier 1+)
     const premiumUserIds = await this.getPremiumUsers();
-    const timeStr = new Date().toLocaleString('ru-RU', {
-      day: 'numeric', month: 'long', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-    const typeLabel = REPORT_TYPE_LABELS[dto.type] || dto.type;
 
     const notificationData = JSON.stringify({
       reportId: report.id,
@@ -366,6 +410,7 @@ export class ReportsService {
       images: dto.images,
       time: timeStr,
       address: dto.address,
+      city: reportCity,
       severity: dto.severity || 3,
       description: dto.description,
     });
@@ -392,7 +437,7 @@ export class ReportsService {
     }
 
     // 4. Send to users in the same city
-    const city = dto.city;
+    const city = reportCity;
     if (city) {
       const cityUserIds = await this.getUsersInCity(city);
       for (const uid of cityUserIds) {

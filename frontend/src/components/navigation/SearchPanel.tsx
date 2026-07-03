@@ -673,8 +673,8 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
                 const isSelected = selectedLocalRoute?.type === route.type;
                 const durationMin = Math.round(route.duration / 60);
                 const distStr = route.distance >= 1
-                  ? `${route.distance.toFixed(1)} км`
-                  : `${Math.round(route.distance * 1000)} м`;
+                  ? `${route.distance.toFixed(1)} ${t('searchPanel.km')}`
+                  : `${Math.round(route.distance * 1000)} ${t('searchPanel.m')}`;
                 return (
                   <button key={route.type} onClick={() => setSelectedLocalRoute(route)}
                     className={`w-full p-3 rounded-2xl border transition-all text-left ${

@@ -47,7 +47,7 @@ export function Sidebar() {
     PREMIUM_STANDARD: 'text-accent-400', PREMIUM_MAX: 'text-yellow-400',
   };
   const tierLabels: Record<string, string> = {
-    FREE: 'Бесплатно', PREMIUM_BASIC: 'Premium Basic', PREMIUM_STANDARD: 'Premium Standard', PREMIUM_MAX: 'Premium Max',
+    FREE: t('sidebar.free'), PREMIUM_BASIC: t('sidebar.premiumBasic'), PREMIUM_STANDARD: t('sidebar.premiumStandard'), PREMIUM_MAX: t('sidebar.premiumMax'),
   };
 
   return (

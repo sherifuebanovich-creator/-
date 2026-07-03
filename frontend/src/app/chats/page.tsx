@@ -267,7 +267,7 @@ function GroupsListSection({ searchQuery }: { searchQuery: string }) {
               </p>
             </div>
             {myGroups.some(mg => mg.id === group.id) && (
-              <span className="text-[10px] font-medium text-primary-400 bg-primary-600/20 px-2 py-1 rounded-lg">Вступили</span>
+              <span className="text-[10px] font-medium text-primary-400 bg-primary-600/20 px-2 py-1 rounded-lg">{t('chats.joined')}</span>
             )}
           </motion.div>
         </Link>

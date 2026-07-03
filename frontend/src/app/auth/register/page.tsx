@@ -131,19 +131,18 @@ const CAR_MAKES: Record<string, string[]> = {
   'Zotye': ['T600', 'Z300', 'SR9', 'Coupa'],
 };
 
-const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = Array.from({ length: CURRENT_YEAR - 1969 + 1 }, (_, i) => CURRENT_YEAR - i);
-
 const ALL_MAKES = Object.keys(CAR_MAKES).sort((a, b) => a.localeCompare(b));
 
 export default function RegisterPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const { setUser, setTokens } = useAuthStore();
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const years = useMemo(() => Array.from({ length: currentYear - 1969 + 1 }, (_, i) => currentYear - i), [currentYear]);
   const [form, setForm] = useState({
     email: '', username: '', displayName: '', password: '', lang: 'ru',
     vehicleType: 'CAR' as VehicleType,
-    vehicleMake: '', vehicleModel: '', vehicleYear: CURRENT_YEAR,
+    vehicleMake: '', vehicleModel: '', vehicleYear: currentYear,
   });
   const [showPass, setShowPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -420,7 +419,7 @@ export default function RegisterPage() {
                   <label className="block text-xs text-gray-400 mb-1.5 font-medium">{t('auth.register.yearLabel')}</label>
                   <select value={form.vehicleYear} onChange={update('vehicleYear')}
                     className="input-field appearance-none">
-                    {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                    {years.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
 
