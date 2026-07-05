@@ -11,8 +11,8 @@ COPY . .
 # Generate Prisma client FIRST (required before TypeScript compile)
 RUN npx prisma generate
 
-# Build with type-stripping to skip type errors (ts-node compatible)
-RUN npx nest build 2>/dev/null || npx tsc -p tsconfig.json --skipLibCheck --noEmitOnError false
+# Force clean build (webpack cache can skip recompilation)
+RUN rm -rf dist/ node_modules/.cache/ && npx nest build 2>&1 || (echo "=== nest build failed, falling back to tsc ===" && npx tsc -p tsconfig.json --skipLibCheck --noEmitOnError false)
 
 # ── Stage 2: Runner ───────────────────────────────────────────────────────────
 FROM node:20-bookworm-slim AS runner
