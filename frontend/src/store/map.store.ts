@@ -270,5 +270,8 @@ export const useMapStore = create<MapState>((set) => ({
         distanceToNext: 0,
         currentLeg: 0,
       },
+      searchQuery: '',
+      searchSuggestions: [],
+      selectedSearchResult: null,
     }),
 }));

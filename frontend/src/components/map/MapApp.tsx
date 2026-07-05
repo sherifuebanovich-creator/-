@@ -35,7 +35,7 @@ export default function MapApp() {
       {!navigation.isNavigating && <TopBar />}
 
       {!navigation.isNavigating && (
-        <div className="absolute left-4 bottom-28 md:bottom-24 z-40">
+        <div className="absolute left-2 sm:left-4 bottom-24 sm:bottom-24 z-40">
           <VehicleModeToggle />
         </div>
       )}

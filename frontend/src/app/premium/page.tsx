@@ -122,7 +122,7 @@ function PremiumPage() {
       <div className="absolute top-[20%] right-[-20%] w-[60vw] h-[60vw] rounded-full bg-purple-900/10 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[10%] w-[50vw] h-[50vw] rounded-full bg-yellow-900/5 blur-[80px] pointer-events-none" />
 
-      <div className="relative px-4 pt-14 max-w-lg mx-auto z-10">
+      <div className="relative px-3 sm:px-4 pt-12 sm:pt-14 max-w-lg mx-auto z-10">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-all">
           <FaArrowLeft size={14} /> {t('common.back')}
         </button>

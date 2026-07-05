@@ -27,18 +27,18 @@ export function BottomBar() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute bottom-0 left-0 right-0 z-40 safe-bottom flex justify-center">
-      <div className="mx-4 mb-4 w-full max-w-lg">
-        <div className="glass-dark rounded-2xl px-2 py-2 flex items-center justify-around">
+      <div className="mx-2 sm:mx-4 mb-2 sm:mb-4 w-full max-w-lg">
+        <div className="glass-dark rounded-xl sm:rounded-2xl px-1 sm:px-2 py-1.5 sm:py-2 flex items-center justify-around">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
-            const classes = `flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all relative ${
+            const classes = `flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all relative ${
               isActive ? 'bg-primary-600/30 text-primary-400' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}`;
             const content = (
               <>
                 {tab.icon}
-                <span className="text-[10px] font-medium leading-none">{tab.label}</span>
+                <span className="text-[9px] sm:text-[10px] font-medium leading-none">{tab.label}</span>
                 {isActive && (
-                  <motion.div layoutId="tab-indicator" className="absolute bottom-1 w-1 h-1 rounded-full bg-primary-400" />
+                  <motion.div layoutId="tab-indicator" className="absolute bottom-0.5 sm:bottom-1 w-1 h-1 rounded-full bg-primary-400" />
                 )}
               </>
             );

@@ -60,6 +60,7 @@ const OSM_TAG_MAP: Record<string, string[]> = {
   GAS_STATION: ['["amenity"="fuel"]'],
   EV_CHARGER: ['["amenity"="charging_station"]'],
   PARKING: ['["amenity"="parking"]'],
+  TRUCK_PARKING: ['["amenity"="truck_parking"]'],
   CAFE: ['["amenity"="cafe"]'],
   RESTAURANT: ['["amenity"="restaurant"]'],
   HOTEL: ['["tourism"="hotel"]'],
@@ -448,7 +449,7 @@ export class MapService {
         }`;
         const response = await axios.get(photonUrl, { timeout: 2000 });
         externalResults = response.data.features.map((f: any) => ({
-        id: `ext-${f.properties.osm_id || f.properties.osm_key || ''}-${f.properties.name || ''}-${f.geometry.coordinates[0]}-${f.geometry.coordinates[1]}`.replace(/[^a-zA-Z0-9_-]/g, '_'),
+        id: `ext-${f.properties.osm_id || f.properties.osm_key || 'unknown'}-${f.properties.name || 'place'}-${f.geometry.coordinates[0]}-${f.geometry.coordinates[1]}`.replace(/[^a-zA-Z0-9_-]/g, '_'),
         name: f.properties.name || f.properties.street || f.properties.city,
         address: [
           f.properties.street,
@@ -511,7 +512,7 @@ export class MapService {
         }`;
         const response = await axios.get(url, { timeout: 2000 });
         externalResults = response.data.features.map((f: any) => ({
-          id: `ext-${f.properties.osm_id || ''}-${f.properties.name || ''}-${f.geometry.coordinates[0]}-${f.geometry.coordinates[1]}`.replace(/[^a-zA-Z0-9_-]/g, '_'),
+          id: `ext-${f.properties.osm_id || 'unknown'}-${f.properties.name || 'place'}-${f.geometry.coordinates[0]}-${f.geometry.coordinates[1]}`.replace(/[^a-zA-Z0-9_-]/g, '_'),
           name: f.properties.name || f.properties.street || f.properties.city || query,
           address: [f.properties.street, f.properties.housenumber, f.properties.city, f.properties.country].filter(Boolean).join(', '),
           lat: f.geometry.coordinates[1],

@@ -46,3 +46,7 @@ coverage/
 *.tsbuildinfo
 .vercel
 .turbo
+
+.vercel
+.env*
+!.env.production

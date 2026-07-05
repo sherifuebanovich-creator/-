@@ -109,7 +109,7 @@ echo -e "${CYAN}║  6. BUILD & DEPLOY — Backend to Cloud Run                 
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-read -p "  Vercel production URL (e.g. https://rovx.vercel.app): " CORS_ORIGIN
+read -p "  Vercel production URL (e.g. https://rovx-app-livid.vercel.app): " CORS_ORIGIN
 
 cd "$(dirname "$0")"
 

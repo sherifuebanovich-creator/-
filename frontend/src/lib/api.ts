@@ -64,11 +64,15 @@ api.interceptors.response.use(
           headers: { 'x-refresh-token': refreshToken },
         });
 
-        const { accessToken, refreshToken: newRefresh } = res.data.data || res.data || {};
-        if (!accessToken || !newRefresh) throw new Error('Invalid refresh response');
+        const data = res.data?.data || res.data || {};
+        const accessToken = data.accessToken || data.access_token;
+        const newRefresh = data.refreshToken || data.refresh_token;
+        if (!accessToken) throw new Error('Invalid refresh response');
 
         Cookies.set('access_token', accessToken, { expires: 1 / 96 }); // 15min
-        Cookies.set('refresh_token', newRefresh, { expires: 30 });
+        if (newRefresh) {
+          Cookies.set('refresh_token', newRefresh, { expires: 30 });
+        }
 
         api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;

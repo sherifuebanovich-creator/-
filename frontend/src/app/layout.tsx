@@ -22,9 +22,12 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ROVX — AI Navigation',
-  description: 'Next-generation AI-powered navigation for drivers, truckers, and travelers',
-  keywords: ['navigation', 'GPS', 'AI', 'maps', 'route', 'traffic'],
+  title: {
+    default: 'ROVX — AI Navigation',
+    template: '%s | ROVX',
+  },
+  description: 'Next-generation AI-powered navigation for drivers, truckers, and travelers. Real-time traffic, fuel prices, speed cameras, and smart route planning.',
+  keywords: ['navigation', 'GPS', 'AI', 'maps', 'route', 'traffic', 'fuel prices', 'speed cameras', 'truck navigation'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -34,6 +37,37 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: '/logo.png', sizes: '192x192' }, { url: '/logo.png', sizes: '512x512' }],
     apple: '/logo.png',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ru_RU',
+    siteName: 'ROVX',
+    title: 'ROVX — AI Navigation',
+    description: 'Next-generation AI-powered navigation for drivers, truckers, and travelers.',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ROVX — AI Navigation',
+    description: 'Next-generation AI-powered navigation for drivers, truckers, and travelers.',
+    images: ['/opengraph-image'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'ВАШ_КОД_ПРОВЕРКИ_SEARCH_CONSOLE',
+  },
+  alternates: {
+    canonical: 'https://rovx-app-livid.vercel.app',
   },
 };
 

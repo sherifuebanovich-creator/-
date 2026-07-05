@@ -1,6 +1,7 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": ".next"
+  "env": {
+    "NEXTAUTH_URL": "https://rovx-app-livid.vercel.app"
+  }
 }

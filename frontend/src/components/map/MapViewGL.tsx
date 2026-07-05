@@ -172,58 +172,60 @@ export default function MapViewGL() {
 
   // Route polyline
   useEffect(() => {
-    if (!mapRef.current) return;
+    const map = mapRef.current;
+    if (!map) return;
 
     const routeId = 'route-line';
 
-    if (mapRef.current.getSource(routeId)) {
+    const cleanupRoute = () => {
       try {
-        (mapRef.current.getSource(routeId) as maplibregl.GeoJSONSource).setData({
-          type: 'FeatureCollection',
-          features: [],
-        });
+        if (map.getLayer(routeId)) map.removeLayer(routeId);
       } catch { /* ignore */ }
+      try {
+        if (map.getSource(routeId)) map.removeSource(routeId);
+      } catch { /* ignore */ }
+    };
+
+    if (!selectedRoute?.polyline?.length) {
+      cleanupRoute();
+      routeSourceRef.current = null;
+      return;
     }
 
-    if (mapRef.current.getLayer(routeId)) {
-      mapRef.current.removeLayer(routeId);
-    }
-    if (mapRef.current.getSource(routeId)) {
-      mapRef.current.removeSource(routeId);
-    }
+    cleanupRoute();
 
-    if (selectedRoute?.polyline?.length) {
-      const coords = selectedRoute.polyline.map((p) => [p.lng, p.lat]);
+    const coords = selectedRoute.polyline.map((p) => [p.lng, p.lat]);
 
-      mapRef.current.addSource(routeId, {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'LineString', coordinates: coords },
-        },
-      });
+    map.addSource(routeId, {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: coords },
+      },
+    });
 
-      mapRef.current.addLayer({
-        id: routeId,
-        type: 'line',
-        source: routeId,
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': '#0ea5e9',
-          'line-width': 5,
-          'line-opacity': 0.9,
-        },
-      });
+    map.addLayer({
+      id: routeId,
+      type: 'line',
+      source: routeId,
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#0ea5e9',
+        'line-width': 5,
+        'line-opacity': 0.9,
+      },
+    });
 
-      routeSourceRef.current = routeId;
+    routeSourceRef.current = routeId;
 
+    try {
       const bounds = coords.reduce(
         (b, c) => b.extend(c as [number, number]),
         new maplibregl.LngLatBounds(coords[0] as [number, number], coords[0] as [number, number]),
       );
-      mapRef.current.fitBounds(bounds, { padding: 60, duration: 500 });
-    }
+      map.fitBounds(bounds, { padding: 60, duration: 500 });
+    } catch { /* ignore */ }
   }, [selectedRoute]);
 
   // Render POI markers
@@ -351,28 +353,27 @@ export default function MapViewGL() {
 
   // 3D toggle effect — defer via idle callback
   useEffect(() => {
-    if (!mapRef.current) return;
+    const map = mapRef.current;
+    if (!map) return;
     show3DRef.current = show3D;
 
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(() => {
-        if (!mapRef.current) return;
+    const apply3D = () => {
+      if (!mapRef.current) return;
+      try {
         if (show3D && mapStyle !== 'satellite') {
           add3DBuildings(mapRef.current);
           has3DBuildingsRef.current = true;
-        } else {
+        } else if (has3DBuildingsRef.current) {
           remove3DBuildings(mapRef.current);
           has3DBuildingsRef.current = false;
         }
-      }, { timeout: 1000 });
+      } catch { /* ignore */ }
+    };
+
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(apply3D, { timeout: 1000 });
     } else {
-      if (show3D && mapStyle !== 'satellite') {
-        add3DBuildings(mapRef.current);
-        has3DBuildingsRef.current = true;
-      } else {
-        remove3DBuildings(mapRef.current);
-        has3DBuildingsRef.current = false;
-      }
+      setTimeout(apply3D, 100);
     }
   }, [show3D, mapStyle]);
 

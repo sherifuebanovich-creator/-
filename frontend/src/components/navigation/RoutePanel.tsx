@@ -120,7 +120,8 @@ export function RoutePanel() {
         duration: selectedRoute.duration,
       });
 
-      setActiveTrip((res.data.data || res.data)?.id);
+      const tripId = res.data?.data?.id || res.data?.id;
+      if (tripId) setActiveTrip(tripId);
       setNavigation({ isNavigating: true });
       toast.success(t('routePanel.navigationStarted'));
     } catch {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Cookies from 'js-cookie';
@@ -34,25 +34,36 @@ const MapApp = dynamic(() => import('@/components/map/MapApp'), {
 export default function MapAppLoader() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isLoading } = useAuthStore();
   const [checking, setChecking] = useState(true);
+  const redirectedRef = useRef(false);
 
   useEffect(() => {
     const hasToken = !!Cookies.get('access_token');
 
+    if (isLoading) return;
+
     if (isAuthenticated || user || hasToken) {
       setChecking(false);
+      redirectedRef.current = false;
       return;
     }
 
-    const hasVisited = localStorage.getItem('rovx_hasVisitedBefore');
-    if (!hasVisited) {
-      localStorage.setItem('rovx_hasVisitedBefore', 'true');
-      router.replace('/auth/register');
-    } else {
-      router.replace('/auth/login');
-    }
-  }, [isAuthenticated, user, router]);
+    if (redirectedRef.current) return;
+    redirectedRef.current = true;
+
+    const timer = setTimeout(() => {
+      const hasVisited = localStorage.getItem('rovx_hasVisitedBefore');
+      if (!hasVisited) {
+        localStorage.setItem('rovx_hasVisitedBefore', 'true');
+        router.replace('/auth/register');
+      } else {
+        router.replace('/auth/login');
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, user, isLoading, router]);
 
   if (checking) {
     return (

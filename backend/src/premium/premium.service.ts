@@ -2,7 +2,6 @@ import { Injectable, Logger, BadRequestException, NotFoundException } from '@nes
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import Stripe from 'stripe';
-
 export const PREMIUM_TIERS = [
   { tier: 0, name: 'FREE', price: 0, maxGroups: 0, canCreateGroups: false, canReceiveReports: false, label_en: 'Free', label_ru: 'Бесплатно' },
   { tier: 1, name: 'PREMIUM_BASIC', price: 4.99, maxGroups: 1, canCreateGroups: false, canReceiveReports: true, label_en: 'Premium Basic', label_ru: 'Premium Basic' },
@@ -23,7 +22,7 @@ export class PremiumService {
   ) {
     const stripeKey = this.config.get('STRIPE_SECRET_KEY');
     if (stripeKey) {
-      this.stripe = new Stripe(stripeKey, { apiVersion: '2026-06-24.dahlia' });
+      this.stripe = new Stripe(stripeKey);
     }
   }
 

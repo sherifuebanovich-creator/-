@@ -21,14 +21,15 @@ import toast from 'react-hot-toast';
 
 const QUICK_CATEGORIES = [
   { key: 'GAS_STATION', labelKey: 'searchPanel.categories.gasStations', icon: <FaGasPump size={14} />, color: '#f97316' },
+  { key: 'EV_CHARGER', labelKey: 'searchPanel.categories.evChargers', icon: <FaRoad size={14} />, color: '#22c55e' },
   { key: 'PARKING', labelKey: 'searchPanel.categories.parking', icon: <FaParking size={14} />, color: '#0ea5e9' },
+  { key: 'TRUCK_PARKING', labelKey: 'searchPanel.categories.truckParking', icon: <FaTruck size={14} />, color: '#f97316' },
   { key: 'CAFE', labelKey: 'searchPanel.categories.cafe', icon: <FaCoffee size={14} />, color: '#a78bfa' },
   { key: 'RESTAURANT', labelKey: 'searchPanel.categories.restaurants', icon: <FaUtensils size={14} />, color: '#f43f5e' },
   { key: 'HOTEL', labelKey: 'searchPanel.categories.hotels', icon: <FaHotel size={14} />, color: '#fbbf24' },
   { key: 'HOSPITAL', labelKey: 'searchPanel.categories.hospitals', icon: <FaHospital size={14} />, color: '#ef4444' },
   { key: 'SHOP', labelKey: 'searchPanel.categories.shops', icon: <FaShoppingCart size={14} />, color: '#22c55e' },
   { key: 'CAR_SERVICE', labelKey: 'searchPanel.categories.carService', icon: <FaCar size={14} />, color: '#6b7280' },
-  { key: 'EV_CHARGER', labelKey: 'searchPanel.categories.evChargers', icon: <FaRoad size={14} />, color: '#22c55e' },
 ];
 
 const ROUTE_OPTIONS: { key: RouteType; labelKey: string; icon: React.ReactNode; color: string }[] = [
@@ -508,21 +509,21 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
   // Selected item detail view
   if (selectedItem) {
     return (
-      <div ref={panelRef} data-search-panel className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/40"
-          onClick={(e) => { e.stopPropagation(); setSelectedItem(null); setSelectedSearchResult(null); }}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-          className="relative bg-dark-card/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/10 w-full max-w-md mx-4 mb-0 md:mb-0 overflow-hidden"
-        >
+        <div ref={panelRef} data-search-panel className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/40"
+            onClick={(e) => { e.stopPropagation(); setSelectedItem(null); setSelectedSearchResult(null); }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+            className="relative bg-dark-card/98 backdrop-blur-2xl rounded-t-2xl md:rounded-2xl shadow-2xl border border-white/10 w-full max-w-md mx-0 md:mx-4 mb-0 md:mb-0 overflow-hidden max-h-[90vh]"
+          >
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b border-dark-border">
             <button onClick={() => { setSelectedItem(null); setSelectedSearchResult(null); setQuery(''); inputRef.current?.focus(); }}
@@ -731,7 +732,7 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
         transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-        className="bg-dark-card/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/10 w-full max-w-lg mx-4 overflow-hidden max-h-[80vh] flex flex-col"
+        className="bg-dark-card/98 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/10 w-full max-w-lg mx-2 sm:mx-4 overflow-hidden max-h-[85vh] flex flex-col"
       >
         {/* === Top bar === */}
         <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-dark-border">

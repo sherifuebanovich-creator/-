@@ -69,7 +69,7 @@ function LoginPageContent() {
     try {
       localStorage.setItem('pending_lang', googleLang);
       localStorage.setItem('preferred_lang', googleLang);
-      await signIn('google', { callbackUrl: '/' }, { state: JSON.stringify({ lang: googleLang }) });
+      await signIn('google', { callbackUrl: '/' });
     } catch {
       toast.error(t('auth.login.googleFailed'));
       setIsGoogleLoading(false);

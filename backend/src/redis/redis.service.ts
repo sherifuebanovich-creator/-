@@ -21,11 +21,13 @@ export class RedisService implements OnModuleDestroy {
         lazyConnect: true,
       });
     } else {
+      const host = this.configService.get('REDIS_HOST', 'localhost');
       this.client = new Redis({
-        host: this.configService.get('REDIS_HOST', 'localhost'),
+        host,
         port: this.configService.get<number>('REDIS_PORT', 6379),
         password: this.configService.get('REDIS_PASSWORD'),
         db: this.configService.get<number>('REDIS_DB', 0),
+        tls: host !== 'localhost' ? {} : undefined,
         retryStrategy: (times) => {
           if (times > 10) {
             this.logger.warn('Redis unavailable — running without cache');

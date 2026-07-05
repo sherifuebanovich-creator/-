@@ -1,4 +1,5 @@
 'use client';
+import { Component, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState, lazy, Suspense } from 'react';
@@ -30,6 +31,23 @@ function SocketInitializer() {
   return null;
 }
 
+class SessionProviderErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error) {
+    console.warn('[Providers] SessionProvider failed to load, proceeding without NextAuth:', error.message);
+  }
+  render() {
+    if (this.state.hasError) return <>{this.props.children}</>;
+    return this.props.children;
+  }
+}
+
 const SessionProviderLazy = lazy(() => import('next-auth/react').then(m => ({ default: m.SessionProvider })));
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -37,12 +55,21 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => setMounted(true), []);
   if (!mounted) return <>{children}</>;
   return (
-    <Suspense fallback={<>{children}</>}>
-      <SessionProviderLazy>
-        {children}
-      </SessionProviderLazy>
-    </Suspense>
+    <SessionProviderErrorBoundary>
+      <Suspense fallback={<>{children}</>}>
+        <SessionProviderLazy>
+          {children}
+        </SessionProviderLazy>
+      </Suspense>
+    </SessionProviderErrorBoundary>
   );
+}
+
+function AuthInit() {
+  const initAuth = useAuthStore(s => s.initAuth);
+  const isInitDone = useAuthStore(s => s.isInitDone);
+  useEffect(() => { if (!isInitDone) initAuth(); }, [initAuth, isInitDone]);
+  return null;
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -51,6 +78,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <QueryClientProvider client={client}>
+        <AuthInit />
         <SessionSyncLazy />
         <I18nInitializer />
         <SocketInitializer />

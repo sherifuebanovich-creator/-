@@ -148,9 +148,9 @@ export class AuthService {
         throw new UnauthorizedException('User not active');
       }
 
-    const tokens = await this.generateTokens(user.id, user.email, user.role);
-    await this.saveRefreshToken(user.id, tokens.refreshToken);
-    return tokens;
+      const tokens = await this.generateTokens(user.id, user.email, user.role);
+      await this.saveRefreshToken(user.id, tokens.refreshToken);
+      return tokens;
     } catch (e) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }

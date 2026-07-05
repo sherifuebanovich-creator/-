@@ -57,7 +57,7 @@ export function Sidebar() {
 
       <motion.div initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="absolute left-0 top-0 bottom-0 w-80 z-50 bg-dark-card border-r border-dark-border flex flex-col safe-top">
+        className="absolute left-0 top-0 bottom-0 w-72 sm:w-80 z-50 bg-dark-card border-r border-dark-border flex flex-col safe-top">
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-6 pb-4 border-b border-dark-border">

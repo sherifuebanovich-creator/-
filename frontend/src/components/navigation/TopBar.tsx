@@ -60,34 +60,34 @@ export function TopBar() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute top-0 left-0 right-0 z-40 safe-top flex justify-center">
-      <div className="px-4 pt-3 pb-2 w-full max-w-5xl">
-        <div className="flex items-center gap-2">
+        <div className="px-2 sm:px-4 pt-2 sm:pt-3 pb-2 w-full max-w-5xl">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button onClick={toggleSidebar}
-            className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
-            <FaBars size={16} className="text-gray-300" />
+            className="flex-shrink-0 w-9 sm:w-10 h-9 sm:h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all">
+            <FaBars size={14} className="text-gray-300" />
           </button>
 
           <button onClick={toggleSearch}
-            className="flex-1 glass-dark rounded-xl flex items-center gap-3 px-4 h-10 hover:bg-white/10 active:scale-95 transition-all text-left">
-            <FaSearch size={14} className="text-primary-400 flex-shrink-0" />
+            className="flex-1 glass-dark rounded-xl flex items-center gap-2 sm:gap-3 px-3 sm:px-4 h-9 sm:h-10 hover:bg-white/10 active:scale-95 transition-all text-left">
+            <FaSearch size={12} className="text-primary-400 flex-shrink-0" />
             {hasRoute ? (
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-400 leading-none">{t('topbar.to')}</p>
-                <p className="text-sm text-white truncate">{destination?.name}</p>
+              <div className="flex-1 min-w-0 hidden xs:block">
+                <p className="text-[10px] sm:text-xs text-gray-400 leading-none">{t('topbar.to')}</p>
+                <p className="text-xs sm:text-sm text-white truncate">{destination?.name}</p>
               </div>
             ) : (
-              <span className="text-sm text-gray-400">{t('topbar.whereTo')}</span>
+              <span className="text-xs sm:text-sm text-gray-400 truncate">{t('topbar.whereTo')}</span>
             )}
           </button>
 
           {/* Map mode selector */}
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <button
               onClick={() => setShowModeMenu(!showModeMenu)}
-              className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
+              className="flex-shrink-0 w-9 sm:w-10 h-9 sm:h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
               title={t('topbar.mapMode')}
             >
-              <FaCube size={15} className="text-primary-400" />
+              <FaCube size={13} className="text-primary-400" />
             </button>
             {showModeMenu && (
               <>
@@ -136,10 +136,10 @@ export function TopBar() {
                 setFollowUser(true);
               }
             }}
-            className={`flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all ${userLocation ? 'text-primary-400' : 'text-gray-600'}`}
+            className={`flex-shrink-0 w-9 sm:w-10 h-9 sm:h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all ${userLocation ? 'text-primary-400' : 'text-gray-600'}`}
             title={t('topbar.myLocation')}
           >
-            <FaCrosshairs size={15} />
+            <FaCrosshairs size={13} />
           </button>
 
           {/* Theme toggle */}
@@ -152,17 +152,17 @@ export function TopBar() {
               if (next && mapStyle === 'streets') setMapStyle('night');
               else if (!next && mapStyle === 'night') setMapStyle('streets');
             }}
-            className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
+            className="flex-shrink-0 w-9 sm:w-10 h-9 sm:h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all hidden sm:flex"
             title={darkMode ? t('topbar.lightTheme') : t('topbar.darkTheme')}
           >
-            {darkMode ? <FaSun size={15} className="text-yellow-400" /> : <FaMoon size={15} className="text-gray-300" />}
+            {darkMode ? <FaSun size={13} className="text-yellow-400" /> : <FaMoon size={13} className="text-gray-300" />}
           </button>
 
           {/* Notifications */}
           <button onClick={() => router.push('/notifications')}
-            className="flex-shrink-0 w-10 h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all relative">
-            <FaBell size={16} className="text-gray-300" />
-            {hasUnread && <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-accent-500 rounded-full animate-pulse" />}
+            className="flex-shrink-0 w-9 sm:w-10 h-9 sm:h-10 glass-dark rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all relative">
+            <FaBell size={14} className="text-gray-300" />
+            {hasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2.5 bg-accent-500 rounded-full animate-pulse" />}
           </button>
         </div>
       </div>

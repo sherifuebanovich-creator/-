@@ -21,8 +21,10 @@ const authOptions: NextAuthOptions = {
         try {
           let lang = 'en';
           try {
-            const state = JSON.parse((account.state as string) || '{}');
-            lang = state.lang || 'en';
+            if (typeof window !== 'undefined') {
+              lang = localStorage.getItem('pending_lang') || 'en';
+              localStorage.removeItem('pending_lang');
+            }
           } catch {}
 
           const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
@@ -44,32 +46,29 @@ const authOptions: NextAuthOptions = {
               (user as any).refreshToken = data.data.refreshToken;
               (user as any).rovxUser = data.data.user;
             } else {
-              console.error('[Auth] Backend returned OK but no accessToken');
-              return false;
+              console.warn('[Auth] Backend returned OK but no accessToken — proceeding without backend sync');
             }
           } else {
             const errBody = await res.text().catch(() => '');
-            console.error(`[Auth] Backend rejected Google sign-in [${res.status}]: ${errBody.slice(0, 200)}`);
-            return false;
+            console.warn(`[Auth] Backend rejected Google sign-in [${res.status}]: ${errBody.slice(0, 200)} — proceeding without backend sync`);
           }
         } catch (err) {
-          console.error('[Auth] Backend unreachable (API server at ' + process.env.NEXT_PUBLIC_API_URL + '):', (err as Error).message);
-          return false;
+          console.warn('[Auth] Backend unreachable — proceeding without backend sync:', (err as Error).message);
         }
       }
       return true;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = (user as any).accessToken;
-        token.refreshToken = (user as any).refreshToken;
-        token.rovxUser = (user as any).rovxUser;
+        token.accessToken = (user as any).accessToken ?? token.accessToken;
+        token.refreshToken = (user as any).refreshToken ?? token.refreshToken;
+        token.rovxUser = (user as any)?.rovxUser ?? token.rovxUser;
       }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken as string;
-      session.refreshToken = token.refreshToken as string;
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
       session.rovxUser = token.rovxUser;
       return session;
     },

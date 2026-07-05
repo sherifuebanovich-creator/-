@@ -229,38 +229,38 @@ export function NavigationHUD() {
         animate={{ y: 0, opacity: 1 }}
         className="bg-dark-card/95 backdrop-blur-xl border-b border-dark-border safe-top pointer-events-auto"
       >
-        <div className="px-4 pt-4 pb-3">
+        <div className="px-3 sm:px-4 pt-3 sm:pt-4 pb-2 sm:pb-3">
           {currentInstruction ? (
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 flex-shrink-0 bg-primary-600 rounded-2xl flex items-center
-                              justify-center text-3xl shadow-glow-primary">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-primary-600 rounded-xl sm:rounded-2xl flex items-center
+                              justify-center text-2xl sm:text-3xl shadow-glow-primary">
                 {getTurnIcon(currentInstruction.type)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-2xl font-bold text-white leading-tight">
+                <p className="text-lg sm:text-2xl font-bold text-white leading-tight">
                   {formatDistance(currentInstruction.distance)}
                 </p>
-                <p className="text-sm text-gray-300 mt-0.5 truncate">{currentInstruction.text}</p>
+                <p className="text-xs sm:text-sm text-gray-300 mt-0.5 truncate">{currentInstruction.text}</p>
                 {currentInstruction.streetName && (
-                  <p className="text-xs text-gray-500 truncate">{currentInstruction.streetName}</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">{currentInstruction.streetName}</p>
                 )}
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 flex-shrink-0 bg-green-600 rounded-2xl flex items-center
-                              justify-center text-3xl">🏁</div>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-green-600 rounded-xl sm:rounded-2xl flex items-center
+                              justify-center text-2xl sm:text-3xl">🏁</div>
               <div>
-                <p className="text-xl font-bold text-white">{t('navigationHud.arrived')}</p>
-                <p className="text-sm text-gray-300">{destination?.name}</p>
+                <p className="text-lg sm:text-xl font-bold text-white">{t('navigationHud.arrived')}</p>
+                <p className="text-xs sm:text-sm text-gray-300">{destination?.name}</p>
               </div>
             </div>
           )}
 
           {instructions[currentLeg + 1] && (
-            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-dark-border">
-              <FaChevronRight size={14} className="text-gray-500" />
-              <p className="text-xs text-gray-400 truncate">
+            <div className="flex items-center gap-2 mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-dark-border">
+              <FaChevronRight size={12} className="text-gray-500" />
+              <p className="text-[11px] sm:text-xs text-gray-400 truncate">
                 {t('navigationHud.then', { instruction: instructions[currentLeg + 1].text })}
               </p>
             </div>
@@ -272,48 +272,48 @@ export function NavigationHUD() {
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="absolute bottom-24 left-4 right-4 pointer-events-auto"
+        className="absolute bottom-20 sm:bottom-24 left-2 sm:left-4 right-2 sm:right-4 pointer-events-auto"
       >
-        <div className="glass-dark rounded-2xl px-4 py-3 flex items-center justify-between">
+        <div className="glass-dark rounded-xl sm:rounded-2xl px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-1">
           {/* Speed */}
-          <div className="text-center">
-            <p className="text-lg font-bold text-white tabular-nums">
+          <div className="text-center min-w-0">
+            <p className="text-base sm:text-lg font-bold text-white tabular-nums">
               {userSpeed > 0 ? `${Math.round(userSpeed)}` : '--'}
             </p>
-            <p className="text-[10px] text-gray-400">{t('navigationHud.kmh')}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">{t('navigationHud.kmh')}</p>
           </div>
 
           {/* ETA */}
-          <div className="text-center">
-            <p className="text-lg font-bold text-white tabular-nums">
+          <div className="text-center min-w-0">
+            <p className="text-base sm:text-lg font-bold text-white tabular-nums">
               {remainingMin !== null ? `${remainingMin} ${t('navigationHud.min')}` : '--'}
             </p>
-            <p className="text-[10px] text-gray-400">{t('navigationHud.eta')}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">{t('navigationHud.eta')}</p>
           </div>
 
-          <div className="text-center">
-            <p className="text-lg font-bold text-white tabular-nums">
+          <div className="text-center min-w-0">
+            <p className="text-base sm:text-lg font-bold text-white tabular-nums">
               {remainingDist !== null ? formatDistance(remainingDist) : '--'}
             </p>
-            <p className="text-[10px] text-gray-400">{t('navigationHud.remaining')}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">{t('navigationHud.remaining')}</p>
           </div>
 
-          <div className="text-center max-w-[80px]">
-            <p className="text-sm font-semibold text-white truncate">{destination?.name}</p>
-            <p className="text-[10px] text-gray-400">{t('navigationHud.destination')}</p>
+          <div className="text-center max-w-[60px] sm:max-w-[80px] hidden xs:block">
+            <p className="text-[11px] sm:text-sm font-semibold text-white truncate">{destination?.name}</p>
+            <p className="text-[8px] sm:text-[10px] text-gray-400">{t('navigationHud.destination')}</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button onClick={() => setAiCoDriver(!isAiCoDriverEnabled)}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+              className={`w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center transition-all ${
                 isAiCoDriverEnabled ? 'bg-primary-600 text-white' : 'bg-white/10 text-gray-400'
               }`}>
-              {isAiCoDriverEnabled ? <FaVolumeUp size={14} /> : <FaVolumeMute size={14} />}
+              {isAiCoDriverEnabled ? <FaVolumeUp size={12} /> : <FaVolumeMute size={12} />}
             </button>
             <button onClick={clearRoute}
-              className="w-8 h-8 bg-red-600/20 rounded-lg flex items-center justify-center
+              className="w-7 sm:w-8 h-7 sm:h-8 bg-red-600/20 rounded-lg flex items-center justify-center
                          text-red-400 hover:bg-red-600/40 transition-all">
-              <FaTimes size={14} />
+              <FaTimes size={12} />
             </button>
           </div>
         </div>
