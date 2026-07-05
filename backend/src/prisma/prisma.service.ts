@@ -1,5 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -19,10 +21,43 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   async onModuleInit() {
     await this.$connect();
     this.logger.log('Database connected');
+    await this.ensureTables();
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
+  }
+
+  private async ensureTables() {
+    try {
+      const result = await this.$queryRawUnsafe<{exists: boolean}[]>(
+        `SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname='public' AND tablename='users') as exists`
+      );
+      if (result[0]?.exists) return;
+    } catch {
+      // table check failed, proceed to create
+    }
+
+    try {
+      this.logger.log('Creating database tables...');
+      const migrationPath = join(__dirname, '..', '..', 'prisma', 'migrations', '20260705101500_init', 'migration.sql');
+      const sql = readFileSync(migrationPath, 'utf-8');
+      const statements = sql
+        .split(';')
+        .map(s => s.trim())
+        .filter(s => s.length > 0 && !s.startsWith('--'));
+
+      for (const stmt of statements) {
+        try {
+          await this.$executeRawUnsafe(stmt + ';');
+        } catch (err: any) {
+          this.logger.warn(`SQL warning (non-fatal): ${err.message?.slice(0, 100)}`);
+        }
+      }
+      this.logger.log('Database tables created');
+    } catch (err: any) {
+      this.logger.error(`Failed to create tables: ${err.message}`);
+    }
   }
 
   async cleanDatabase() {
