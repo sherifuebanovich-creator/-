@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "npx prisma db push --accept-data-loss && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json",
@@ -32,6 +32,7 @@
     "@nestjs/throttler": "^5.1.2",
     "@nestjs/websockets": "^10.3.0",
     "@prisma/client": "^5.10.0",
+    "prisma": "^5.10.0",
     "@types/nodemailer": "^8.0.1",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
@@ -63,7 +64,6 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/uuid": "^9.0.7",
-    "prisma": "^5.10.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
