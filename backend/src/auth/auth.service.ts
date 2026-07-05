@@ -74,8 +74,13 @@ export class AuthService {
       },
     });
 
-    const code = await this.verificationService.generateCode(user.email);
-    await this.mailService.sendVerificationCode(user.email, code);
+    this.verificationService.generateCode(user.email).then(code =>
+      this.mailService.sendVerificationCode(user.email, code).catch(err =>
+        this.logger.warn(`Failed to send verification email: ${err.message}`)
+      )
+    ).catch(err =>
+      this.logger.warn(`Failed to generate verification code: ${err.message}`)
+    );
 
     this.logger.log(`New user registered: ${user.email}`);
     return {
