@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import compression from 'compression';
 import helmet from 'helmet';
 import * as express from 'express';
+import { execSync } from 'child_process';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -13,6 +14,19 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+
+  // Push Prisma schema before any DB access
+  try {
+    logger.log('Running prisma db push...');
+    const pushResult = execSync(
+      'npx prisma db push --accept-data-loss 2>&1',
+      { encoding: 'utf-8', timeout: 60000 },
+    ).trim();
+    logger.log(pushResult.split('\n').pop() || 'prisma db push done');
+  } catch (err: any) {
+    logger.warn(`prisma db push failed (non-fatal): ${err.message?.split('\n')[0]}`);
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
     logger: ['error', 'warn', 'log', 'debug'],
