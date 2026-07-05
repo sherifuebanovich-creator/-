@@ -77,7 +77,7 @@ export default function MapAppLoader() {
       } else {
         router.replace('/auth/login');
       }
-    }, 2000);
+    }, 10000);
 
     return () => {
       clearTimeout(timerRef.current);

@@ -2,7 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/auth.store';
-import { usersApi } from '@/lib/api';
+import { api, usersApi } from '@/lib/api';
 import Cookies from 'js-cookie';
 
 export function SessionSync() {
@@ -19,9 +19,36 @@ export function SessionSync() {
     if (status === 'authenticated' && session) {
       const { accessToken: sessionToken, refreshToken, rovxUser } = session as any;
       const cookieToken = Cookies.get('access_token');
+      const googleUser = (session as any).user;
 
       if (sessionToken && cookieToken !== sessionToken) {
         setTokens(sessionToken, refreshToken || '');
+      }
+
+      if (!sessionToken && !rovxUser && googleUser?.email && !syncedRef.current) {
+        const pendingLang = typeof window !== 'undefined' ? localStorage.getItem('pending_lang') : null;
+        api.post('/auth/google', {
+          email: googleUser.email,
+          displayName: googleUser.name || '',
+          avatar: googleUser.image || '',
+          googleId: googleUser.id || googleUser.email,
+          lang: pendingLang || 'en',
+        }).then((res) => {
+          const data = res.data?.data || res.data || {};
+          const accessToken = data.accessToken || data.access_token;
+          const newRefresh = data.refreshToken || data.refresh_token;
+          const userData = data.user || data;
+          if (accessToken) {
+            setTokens(accessToken, newRefresh || '');
+          }
+          if (userData?.id) {
+            setUser(userData);
+          }
+          syncedRef.current = true;
+        }).catch(() => {
+          syncedRef.current = true;
+        });
+        return;
       }
 
       if (rovxUser && !syncedRef.current) {
